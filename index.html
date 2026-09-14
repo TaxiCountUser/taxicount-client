@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="/" />
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <!-- (N-02) CSP de defensa en profundidad. Flutter Web (canvaskit) necesita
+         'unsafe-inline'/'wasm-unsafe-eval' y gstatic, así que no es una barrera
+         dura anti-XSS, pero bloquea object/embed, secuestro de <base> y orígenes
+         no-TLS. Endurecer (quitar unsafe-inline con nonces) es un paso futuro. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss: blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
+    <meta name="description" content="TaxiCount - gestión para taxistas autónomos" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>TaxiCount</title>
+    <!-- Icono de la app / PWA (favicon, iOS y manifest). Rutas relativas al base href. -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#FFF8F2" />
+    <script>
+      // Shim para passkeys_web (dependencia transitiva vía supabase_flutter).
+      // TaxiCount usa login email/contrasena y NO usa passkeys, pero el plugin
+      // se auto-registra y llama PasskeyAuthenticator.init() al arrancar; sin el
+      // bundle.js de Corbado eso lanza "reading 'init' of undefined" y tumba la
+      // app. Damos un no-op para esa unica llamada. Si algun dia se quieren
+      // passkeys de verdad, sustituir por el bundle oficial de Corbado.
+      window.PasskeyAuthenticator = window.PasskeyAuthenticator || { init: function () {} };
+    </script>
+  </head>
+  <body>
+    <script src="flutter_bootstrap.js" async></script>
+    <script>
+      // Aviso de versión nueva: el service worker de Flutter cachea fuerte y el
+      // usuario podía quedarse en una versión vieja sin saberlo. Cuando hay un
+      // SW nuevo esperando, mostramos una barra que fuerza el relevo y recarga.
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+        function showUpdateBar(reg) {
+          if (document.getElementById('tc-update-bar')) return;
+          var bar = document.createElement('div');
+          bar.id = 'tc-update-bar';
+          bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;' +
+            'background:#12121A;color:#F1EFE8;padding:12px 16px;text-align:center;' +
+            'font:14px sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.4);cursor:pointer';
+          bar.textContent = 'Hay una versión nueva de TaxiCount — toca para actualizar';
+          bar.onclick = function () {
+            var w = reg.waiting;
+            if (w) {
+              w.postMessage({ type: 'SKIP_WAITING' });
+              navigator.serviceWorker.addEventListener('controllerchange', function () {
+                window.location.reload();
+              });
+              // Por si el SW no soporta SKIP_WAITING: recarga igualmente.
+              setTimeout(function () { window.location.reload(); }, 1500);
+            } else {
+              window.location.reload();
+            }
+          };
+          document.body.appendChild(bar);
+        }
+        navigator.serviceWorker.ready.then(function (reg) {
+          if (reg.waiting) showUpdateBar(reg);
+          reg.addEventListener('updatefound', function () {
+            var nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', function () {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateBar(reg);
+              }
+            });
+          });
+          // Comprueba actualizaciones al volver a la pestaña (además de al abrir).
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') reg.update();
+          });
+        }).catch(function () {/* sin SW (dev), no pasa nada */});
+      })();
+    </script>
+  </body>
+</html>
