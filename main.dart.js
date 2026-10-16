@@ -139200,7 +139200,7 @@ return A.m($async$B6,r)},
 aLg(a){var s=A.fl(A.o(a==null?"":a)),r=s==null?null:s.fD()
 if(r==null)return"\u2014"
 return B.c.cU(B.e.j(A.b6(r)),2,"0")+"/"+B.c.cU(B.e.j(A.aw(r)),2,"0")+"/"+A.ag(r)},
-aun(){return this.xs("mailto:didakdp.5@gmail.com?subject="+A.oy(2,"TaxiCount \u2014 plan a medida (+100 conductores)",B.az,!1))},
+aun(){return this.xs("mailto:soporte@taxicount.com?subject="+A.oy(2,"TaxiCount \u2014 plan a medida (+100 conductores)",B.az,!1))},
 aLe(a,b){var s,r,q,p,o=this,n=null
 if(!(b==="active"||b==="trialing")){s=o.z?n:o.ga9I()
 return A.ch(A.e(a.l("sub_subscribe"),n,n,n,n,n,n,n,n),B.Yu,s,n)}s=o.r
