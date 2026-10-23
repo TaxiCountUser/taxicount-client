@@ -60,8 +60,8 @@ html.no-webgl #static-bg { display: block; }
 .top > * { pointer-events: auto; }
 .brand img { height: 36px; width: auto; display: block; }
 .top-right { display: flex; align-items: center; gap: 12px; }
-.btn-enter { min-height: 38px; padding: 0 16px; border-radius: 999px; font: 700 .9rem/1 var(--text); color: var(--negre); background: var(--crema); }
-.btn-enter:hover { background: #fff; transform: translateY(-1px); }
+.top .btn-enter { min-height: 36px; padding: 0 16px; border-radius: 999px; font: 700 .85rem/1 var(--text); color: var(--negre); background: var(--crema); } /* .top davant: si no, la regla .btn de sota (52 px) la trepitja */
+.top .btn-enter:hover { background: #fff; transform: translateY(-1px); }
 .lang { display: flex; gap: 2px; border: 1px solid var(--crema-70); border-radius: 999px; padding: 2px; }
 .lang button {
   font: 700 12px/1 var(--mono); letter-spacing: 0.08em;
@@ -151,7 +151,7 @@ footer { margin-top: 2.5rem; display: flex; gap: 18px; justify-content: center; 
   .stop:nth-child(even) .copy { margin-left: 0; }
   .brand img { height: 30px; }
   .btn { width: 100%; }
-  .btn-enter { width: auto; min-height: 34px; padding: 0 12px; font-size: .85rem; }
+  .top .btn-enter { width: auto; min-height: 34px; padding: 0 12px; }
   .top-right { gap: 8px; }
 }
 
