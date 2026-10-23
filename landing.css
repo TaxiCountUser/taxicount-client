@@ -82,7 +82,7 @@ html.no-webgl #static-bg { display: block; }
 .route a:hover span, .route a:focus-visible span { opacity: 1; transform: none; }
 /* A escriptori ample l'etiqueta de la parada activa és visible; les seccions deixen espai a l'esquerra perquè no toqui el text. */
 .route a span { background: rgba(30,27,22,.75); padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
-@media (min-width: 1200px) { .route li.is-active a span { opacity: 1; transform: none; } .stop { padding-left: calc(var(--gutter) + 170px); } }
+@media (min-width: 1200px) { .route a span { opacity: 1; transform: none; } .route li.is-active a span { color: var(--ambre); } .stop { padding-left: calc(var(--gutter) + 170px); } }
 .route li.is-active a { color: var(--ambre); }
 .route li.is-active a::before, .route li.is-done a::before { border-color: var(--ambre); background: var(--ambre); }
 .route-line { position: absolute; left: 4px; top: 5px; bottom: 5px; width: 2px; background: rgba(254,247,236,.18); }
