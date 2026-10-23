@@ -1,106 +1,203 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <base href="/" />
-    <meta charset="UTF-8" />
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <!-- (N-02) CSP de defensa en profundidad. Flutter Web (canvaskit) necesita
-         'unsafe-inline'/'wasm-unsafe-eval' y gstatic, así que no es una barrera
-         dura anti-XSS, pero bloquea object/embed, secuestro de <base> y orígenes
-         no-TLS. Endurecer (quitar unsafe-inline con nonces) es un paso futuro. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss: blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'" />
-    <!-- M4 (auditoría del panel 2026-10-18): GitHub Pages no permite cabeceras y
-         `frame-ancestors` en <meta> se ignora, así que anti-clickjacking en JS:
-         si la página está dentro de un iframe ajeno, se oculta y salta al top. -->
-    <style id="fb-guard">html { display: none !important; }</style>
-    <script>
-      (function () {
-        try {
-          if (window.self === window.top) {
-            var g = document.getElementById('fb-guard'); if (g) g.parentNode.removeChild(g);
-          } else {
-            window.top.location = window.self.location;
-          }
-        } catch (e) {
-          try { window.top.location = window.self.location; } catch (_) {}
-        }
-      })();
-    </script>
-    <meta name="description" content="TaxiCount - gestión para taxistas autónomos" />
-    <!-- Verificación de propiedad en Google Search Console (la exige Play Console
-         para pasar la cuenta de desarrollador a organización). NO borrar. -->
-    <meta name="google-site-verification" content="HVNnbCVPvzkCzFlv4las65SSHCpB_EyFZPz05OzEO4U" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>TaxiCount</title>
-    <!-- Icono de la app / PWA (favicon, iOS y manifest). Rutas relativas al base href. -->
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="manifest" href="manifest.json" />
-    <!-- iPhone: «Añadir a pantalla de inicio» = app a pantalla completa con su nombre
-         (y, desde iOS 16.4, con avisos push). -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="TaxiCount" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content="#FFF8F2" />
-    <script>
-      // Shim para passkeys_web (dependencia transitiva vía supabase_flutter).
-      // TaxiCount usa login email/contrasena y NO usa passkeys, pero el plugin
-      // se auto-registra y llama PasskeyAuthenticator.init() al arrancar; sin el
-      // bundle.js de Corbado eso lanza "reading 'init' of undefined" y tumba la
-      // app. Damos un no-op para esa unica llamada. Si algun dia se quieren
-      // passkeys de verdad, sustituir por el bundle oficial de Corbado.
-      window.PasskeyAuthenticator = window.PasskeyAuthenticator || { init: function () {} };
-    </script>
-  </head>
-  <body>
-    <script src="flutter_bootstrap.js" async></script>
-    <script>
-      // Aviso de versión nueva: el service worker de Flutter cachea fuerte y el
-      // usuario podía quedarse en una versión vieja sin saberlo. Cuando hay un
-      // SW nuevo esperando, mostramos una barra que fuerza el relevo y recarga.
-      (function () {
-        if (!('serviceWorker' in navigator)) return;
-        function showUpdateBar(reg) {
-          if (document.getElementById('tc-update-bar')) return;
-          var bar = document.createElement('div');
-          bar.id = 'tc-update-bar';
-          bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;' +
-            'background:#12121A;color:#F1EFE8;padding:12px 16px;text-align:center;' +
-            'font:14px sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.4);cursor:pointer';
-          bar.textContent = 'Hay una versión nueva de TaxiCount — toca para actualizar';
-          bar.onclick = function () {
-            var w = reg.waiting;
-            if (w) {
-              w.postMessage({ type: 'SKIP_WAITING' });
-              navigator.serviceWorker.addEventListener('controllerchange', function () {
-                window.location.reload();
-              });
-              // Por si el SW no soporta SKIP_WAITING: recarga igualmente.
-              setTimeout(function () { window.location.reload(); }, 1500);
-            } else {
-              window.location.reload();
-            }
-          };
-          document.body.appendChild(bar);
-        }
-        navigator.serviceWorker.ready.then(function (reg) {
-          if (reg.waiting) showUpdateBar(reg);
-          reg.addEventListener('updatefound', function () {
-            var nw = reg.installing;
-            if (!nw) return;
-            nw.addEventListener('statechange', function () {
-              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateBar(reg);
-              }
-            });
-          });
-          // Comprueba actualizaciones al volver a la pestaña (además de al abrir).
-          document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible') reg.update();
-          });
-        }).catch(function () {/* sin SW (dev), no pasa nada */});
-      })();
-    </script>
-  </body>
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TaxiCount — El teu torn, apuntat sol</title>
+<meta name="description" content="Dictes la carrera i TaxiCount fa els comptes. L'app de taxi feta per un taxista: registre per veu, jornada, flota i informes del trimestre.">
+<meta name="theme-color" content="#1E1B16">
+<link rel="icon" href="assets/brand/isotip.png">
+<!-- Fonts autoallotjades (SIL OFL): cap petició a Google. -->
+<link rel="preload" href="assets/fonts/bricolage-latin-500-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/atkinson-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="landing.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+    "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js",
+    "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.mjs"
+  }
+}
+</script>
+</head>
+<body>
+<!-- Vídeo real (vista del conductor) que avança amb l'scroll. Si falla, es fa servir l'escena 3D. -->
+<div id="ride" aria-hidden="true">
+  <video id="ride-video" muted playsinline preload="auto" poster="assets/video/ride-poster.jpg" disablepictureinpicture></video>
+  <div class="ride-shade"></div>
+</div>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="static-bg" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="#inici" aria-label="TaxiCount">
+    <img src="assets/brand/marca-fosc.png" alt="TaxiCount" width="1200" height="400">
+  </a>
+  <div class="top-right">
+    <a class="btn btn-enter" href="https://www.taxicount.com/app/" data-i18n="top_enter">Entrar</a>
+  <div class="lang" role="group" aria-label="Idioma">
+    <button type="button" data-lang="ca" aria-pressed="true">CA</button>
+    <button type="button" data-lang="es" aria-pressed="false">ES</button>
+  </div>
+  </div>
+</header>
+
+<nav class="route" aria-label="Recorregut">
+  <ol>
+    <li><a href="#inici" data-stop="0"><span data-i18n="nav_0">Sortida</span></a></li>
+    <li><a href="#veu" data-stop="1"><span data-i18n="nav_1">La veu</span></a></li>
+    <li><a href="#jornada" data-stop="2"><span data-i18n="nav_2">La jornada</span></a></li>
+    <li><a href="#flota" data-stop="3"><span data-i18n="nav_3">La flota</span></a></li>
+    <li><a href="#trimestre" data-stop="4"><span data-i18n="nav_4">El trimestre</span></a></li>
+    <li><a href="#volant" data-stop="5"><span data-i18n="nav_5">Al volant</span></a></li>
+    <li><a href="#preu" data-stop="6"><span data-i18n="nav_6">El preu</span></a></li>
+    <li><a href="#puja" data-stop="7"><span data-i18n="nav_7">Puja</span></a></li>
+  </ol>
+  <div class="route-line"><div class="route-fill" id="route-fill"></div></div>
+</nav>
+
+<main>
+  <section class="stop hero" id="inici" data-stop="0">
+    <div class="copy">
+      <h1 data-i18n="hero_h">Parla i apunta la carrera</h1>
+      <p class="lead" data-i18n="hero_p">Dicta el teu servei i TaxiCount l'apunta. L'app dels taxistes.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_play">Descarrega-la a Google Play</a>
+      </div>
+    </div>
+    <a class="scroll-hint" href="#veu"><span data-i18n="hero_scroll">Descobreix TaxiCount</span><i aria-hidden="true"></i></a>
+  </section>
+
+  <section class="stop with-phone" id="veu" data-stop="1">
+    <div class="copy">
+      <p class="kicker" data-i18n="s1_k">Parada 1 · La veu</p>
+      <h2 data-i18n="s1_h">Registra una carrera parlant a TaxiCount.</h2>
+      <p data-i18n="s1_p">Import, pagament, origen, destí i el nom dels teus clients: ho dius en el teu idioma i queda apuntat.</p>
+      <div class="dictat" aria-live="polite">
+        <div class="dictat-line"><span class="mic" aria-hidden="true"></span><span class="typed" data-type="s1_dictat">Figueres a Roses, cinquanta euros, targeta</span></div>
+        <ul class="chips">
+          <li><small data-i18n="chip_origen">Origen</small>Figueres</li>
+          <li><small data-i18n="chip_desti">Destí</small>Roses</li>
+          <li><small data-i18n="chip_import">Import</small>50,00 €</li>
+          <li><small data-i18n="chip_pagament">Pagament</small><span data-i18n="chip_targeta">Targeta</span></li>
+        </ul>
+      </div>
+    </div>
+    <figure class="phone"><img src="assets/shots/veu-760.jpg" srcset="assets/shots/veu-760.jpg 760w, assets/shots/veu-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, 380px" alt="" loading="lazy" width="760" height="1689"></figure>
+  </section>
+
+  <section class="stop with-phone" id="jornada" data-stop="2">
+    <div class="copy">
+      <p class="kicker" data-i18n="s2_k">Parada 2 · La jornada</p>
+      <h2 data-i18n="s2_h">Inicies el dia, acabes el dia. La resta ja està fet.</h2>
+      <p data-i18n="s2_p">Kilòmetres, despeses, registre de jornada i el resum de cada dia, sense papers.</p>
+      <ul class="facts">
+        <li data-i18n="s2_f1">Resum diari de despeses i beneficis</li>
+        <li data-i18n="s2_f2">El que guanyes per cada km</li>
+        <li data-i18n="s2_f3">Els km que has recorregut</li>
+        <li data-i18n="s2_f4">Registre de jornada per al control horari</li>
+      </ul>
+    </div>
+    <figure class="phone"><img src="assets/shots/jornada-760.jpg" srcset="assets/shots/jornada-760.jpg 760w, assets/shots/jornada-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, 380px" alt="" loading="lazy" width="760" height="1689"></figure>
+  </section>
+
+  <section class="stop with-phone" id="flota" data-stop="3">
+    <div class="copy">
+      <p class="kicker" data-i18n="s3_k">Parada 3 · La flota</p>
+      <h2 data-i18n="s3_h">Tots els cotxes i tots els conductors, en una pantalla.</h2>
+      <p data-i18n="s3_p">Vehicles, conductors, xat de flota i avisos: el titular de la flota ho veu tot des de l'app o la web.</p>
+      <ul class="facts">
+        <li data-i18n="s3_f1">Cada carrera amb el seu cotxe i el seu conductor</li>
+        <li data-i18n="s3_f2">Xat entre el titular i cada conductor</li>
+        <li data-i18n="s3_f3">Recordatoris d'ITV, assegurança i manteniment</li>
+        <li data-i18n="s3_f4">Revisa la comptabilitat en temps real</li>
+      </ul>
+    </div>
+    <figure class="phone"><img src="assets/shots/flota2-760.jpg" srcset="assets/shots/flota2-760.jpg 760w, assets/shots/flota2-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, 380px" alt="" loading="lazy" width="760" height="1689"></figure>
+  </section>
+
+  <section class="stop with-report" id="trimestre" data-stop="4">
+    <div class="copy">
+      <p class="kicker" data-i18n="s4_k">Parada 4 · El trimestre</p>
+      <h2 data-i18n="s4_h">El trimestre, resolt.</h2>
+      <p data-i18n="s4_p">Informes Excel i PDF per client, per conductor i per dia, a punt per la gestoria.</p>
+    </div>
+    <div class="report" aria-hidden="true">
+      <div class="report-head"><span class="tag xls">XLSX</span><span class="tag pdf">PDF</span><span class="report-title" data-i18n="rep_title">Informe trimestral</span></div>
+      <div class="report-rows">
+        <div><i style="--w:62%"></i><b style="--w:18%"></b></div>
+        <div><i style="--w:48%"></i><b style="--w:22%"></b></div>
+        <div><i style="--w:70%"></i><b style="--w:16%"></b></div>
+        <div><i style="--w:55%"></i><b style="--w:20%"></b></div>
+        <div><i style="--w:41%"></i><b style="--w:24%"></b></div>
+        <div class="total"><i style="--w:30%"></i><b style="--w:26%"></b></div>
+      </div>
+      <ul class="report-by">
+        <li data-i18n="rep_client">per client</li><li data-i18n="rep_conductor">per conductor</li><li data-i18n="rep_dia">per dia</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="stop quiet" id="volant" data-stop="5">
+    <div class="copy">
+      <p class="kicker" data-i18n="s5_k">Parada 5 · Al volant</p>
+      <h2 data-i18n="s5_h">Fet per un taxista que encara condueix.</h2>
+      <p data-i18n="s5_p">Soc la quarta generació de taxistes de la meva família, per deixar enrere l'agenda de paper he creat aquesta aplicació.</p>
+    </div>
+  </section>
+
+  <section class="stop with-meter" id="preu" data-stop="6">
+    <div class="copy">
+      <p class="kicker" data-i18n="s6_k">Parada 6 · El preu</p>
+      <h2 data-i18n="s6_h">Pagues pels conductors que tens. Ni un més.</h2>
+      <p data-i18n="s6_p">Prova-ho 15 dies gratis. Després 3 € per conductor al mes o 30 € l'any. Amb el codi «TAXICOUNT50» et surt a 15 € l'any.</p>
+    </div>
+    <div class="meter" role="img" aria-label="15 dies gratis; 3 € per conductor al mes o 30 € l'any; amb el codi TAXICOUNT50, 15 € l'any">
+      <div class="meter-top"><span data-i18n="meter_label">TARIFA</span><span class="meter-led" aria-hidden="true"></span></div>
+      <div class="meter-digits"><span class="meter-amount">3,00</span><span class="meter-unit">€</span></div>
+      <div class="meter-sub"><span data-i18n="meter_per">per conductor al mes</span></div>
+      <div class="meter-rows">
+        <div><span data-i18n="meter_trial">Prova</span><strong data-i18n="meter_trial_v">15 dies gratis</strong></div>
+        <div><span data-i18n="meter_year">Anual</span><strong>30 €</strong></div>
+        <div class="promo"><span><span data-i18n="meter_promo">Codi</span> <code>TAXICOUNT50</code></span><strong><span class="meter-drop" data-from="30" data-to="15">30</span> € <span data-i18n="meter_year_short">l'any</span></strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stop end" id="puja" data-stop="7">
+    <div class="copy">
+      <h2 data-i18n="s7_h">Puja al taxi.</h2>
+      <p data-i18n="s7_p">Descarrega-la, dicta la primera carrera i deixa que faci els comptes.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_trial">Prova 15 dies gratis</a>
+      </div>
+      <footer>
+        <a href="mailto:soporte@taxicount.com">soporte@taxicount.com</a>
+        <a href="https://taxicount-backend.onrender.com/privacy" data-i18n="foot_privacy">Política de privacitat</a>
+        <details class="credits">
+          <summary data-i18n="foot_credits">Crèdits 3D (CC BY 4.0)</summary>
+          <ul>
+            <li><a href="https://sketchfab.com/3d-models/2008-baird-silver-coronet-taxicab-d4c035d5857f4b49baf2ee27f7051a16" rel="license noopener" target="_blank">2008 Baird Silver Coronet Taxicab</a> — Andrew Duong</li>
+            <li><a href="https://sketchfab.com/3d-models/realistic-tiling-apartment-building-low-poly-12dc03948fd24f23af477cc8e5445353" rel="license noopener" target="_blank">Realistic Tiling Apartment Building</a> — kyantoran</li>
+            <li><a href="https://sketchfab.com/3d-models/modern-nyc-dwellings-8ef9555171c44ba1872a17558f589630" rel="license noopener" target="_blank">Modern NYC Dwellings</a> — 99.Miles</li>
+            <li><a href="https://sketchfab.com/3d-models/street-lamp-4438dd6844384d9ca0e1b7f12775fcc9" rel="license noopener" target="_blank">Street Lamp</a> — Krayton Gaming</li>
+            <li><a href="https://sketchfab.com/3d-models/small-traffic-light-covered-in-stickers-95a52360fdb34a0f92e48b5cee29e37b" rel="license noopener" target="_blank">Small traffic light</a> — Antoine Dresen</li>
+            <li><a href="https://sketchfab.com/3d-models/abribus-bus-stop-bus-station-ab3c98bf93de498bb45c129afa4c3ab3" rel="license noopener" target="_blank">Abribus</a> — Configcars</li>
+            <li><a href="https://sketchfab.com/3d-models/trash-can-e63f57d1f72140e4b37c25880677449d" rel="license noopener" target="_blank">Trash can</a> — LiliumLetifer</li>
+            <li><a href="https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5" rel="license noopener" target="_blank">Generic passenger car pack</a> — Comrade1280</li>
+            <li>Vídeo «Traveling at Night»: <a href="https://www.pexels.com/video/traveling-at-night-5269056/" rel="noopener" target="_blank">George Morina</a> (Pexels)</li>
+            <li>HDRI, asfalt, paviment i façanes: <a href="https://polyhaven.com/" rel="noopener" target="_blank">Poly Haven</a> i <a href="https://ambientcg.com/" rel="noopener" target="_blank">ambientCG</a> (CC0)</li>
+          </ul>
+        </details>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="main.js"></script>
+</body>
 </html>

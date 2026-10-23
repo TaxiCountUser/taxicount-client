@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TaxiCount — Parla. Ja està apuntat.</title>
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#f1efe8;--paper-2:#ece6dc;--ink:#141414;--ink-soft:#3a3733;
+  --amber:#e8a11c;--amber-soft:#fac775;--coral:#f0997b;
+  --serif:'Cormorant Garamond',Georgia,serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background 1s var(--ease)}
+::selection{background:var(--amber);color:var(--ink)}
+a{color:inherit}
+
+.noise{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.045;mix-blend-mode:multiply}
+
+/* Cursor custom */
+.cursor{position:fixed;top:0;left:0;width:20px;height:20px;border:2px solid var(--ink);border-radius:50%;pointer-events:none;z-index:10000;transform:translate3d(-50%,-50%,0);transition:width .3s var(--spring),height .3s var(--spring),background .3s var(--ease);mix-blend-mode:difference;background:transparent}
+.cursor.big{width:64px;height:64px;background:var(--amber)}
+.cursor .lbl{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:.5rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink);opacity:0;transition:opacity .2s}
+.cursor.big .lbl{opacity:1}
+@media(hover:none){.cursor{display:none}}
+
+/* Loader */
+#loader{position:fixed;inset:0;z-index:10001;background:var(--paper);display:none;place-items:center;transition:transform 1s var(--ease)}
+.js #loader{display:grid}
+#loader.done{transform:translateY(-100%)}
+#loader .word{font-family:var(--serif);font-size:clamp(3rem,10vw,7rem);font-weight:600;overflow:hidden}
+#loader .word span{display:block;transform:translateY(110%);animation:up .8s var(--ease) forwards .2s}
+@keyframes up{to{transform:translateY(0)}}
+
+/* reveal blocs de text — l'ocultació NOMÉS s'aplica si hi ha JS (.js); sense JS,
+   tot és visible per defecte (mai una pàgina en blanc). */
+.rl{overflow:hidden;display:block}
+.js .rl>*{transform:translateY(110%);transition:transform 1s var(--ease)}
+.rl>*{display:block}
+.rl.in>*{transform:translateY(0)}
+.js .fade{opacity:0;transform:translateY(30px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.fade.in{opacity:1;transform:none}
+
+/* mask cinètic per imatges/mockups */
+.js .mask{clip-path:inset(100% 0 0 0);transition:clip-path 1.3s cubic-bezier(.16,1,.3,1)}
+.mask.in{clip-path:inset(0 0 0 0)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;mix-blend-mode:difference;color:#fff}
+.brand{font-weight:700;letter-spacing:-.02em;font-size:1.05rem;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:22px}
+.langs{display:flex;gap:2px;font-size:.72rem;font-weight:500}
+.langs button{font-family:var(--mono);background:none;border:none;cursor:pointer;color:#fff;opacity:.55;padding:4px 6px;text-transform:uppercase;letter-spacing:.05em}
+.langs button.on{opacity:1;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.navcta{font-family:var(--mono);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;border:2px solid #fff;padding:8px 14px;text-decoration:none}
+
+.btn{display:inline-block;font-family:var(--mono);font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.03em;background:var(--amber);color:var(--ink);border:2px solid var(--ink);padding:18px 32px;text-decoration:none;cursor:pointer;box-shadow:6px 6px 0 var(--ink);transition:transform .15s var(--ease),box-shadow .15s var(--ease),background .3s var(--ease)}
+.btn:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink);background:var(--amber-soft)}
+.btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+
+section{padding:0 5vw;position:relative}
+.wrap{max-width:1600px;margin:0 auto;width:100%}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:96px;padding-bottom:60px;position:relative;overflow:hidden}
+.eyebrow{font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:26px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(4rem,16vw,15rem);line-height:.82;letter-spacing:-.045em;will-change:transform}
+h1 .amber{color:var(--amber)}
+.hero-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;align-items:end;margin-top:48px}
+.hero-intro{font-size:1.05rem;max-width:46ch;color:var(--ink-soft)}
+.hero-intro b{color:var(--ink)}
+.hero-cta{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.hero-note{font-size:.72rem;color:var(--ink-soft);letter-spacing:.03em}
+.scrollhint{position:absolute;bottom:24px;left:5vw;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* MARQUEE */
+.marq{border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);background:var(--ink);color:var(--paper);overflow:hidden;padding:16px 0}
+.marq .track{display:inline-flex;white-space:nowrap;font-family:var(--serif);font-style:italic;font-size:1.9rem}
+.marq .track span{padding:0 34px}
+.marq .track span::after{content:'✷';padding-left:34px;color:var(--amber)}
+.marq.rev .track{color:var(--amber)}
+
+.kicker{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:18px}
+.kicker b{color:var(--ink)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(2.6rem,7vw,6rem);line-height:.92;letter-spacing:-.03em}
+.lead{font-size:1.05rem;max-width:52ch;color:var(--ink-soft);margin-top:22px}
+.lead b{color:var(--ink)}
+/* bloc "veu": la frase parlada com a peça tipogràfica (no imatge) */
+.say{margin-top:40px;border-left:3px solid var(--amber);padding-left:22px}
+.rec{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#d23a2c}
+.say-q{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(2rem,5.2vw,4rem);line-height:1.02;letter-spacing:-.02em;margin:12px 0 16px}
+.say-r{font-family:var(--mono);font-size:1rem;color:var(--ink-soft)}
+.say-r b{color:var(--ink)}
+
+.split{display:grid;grid-template-columns:1fr 2fr;gap:56px;padding:16vh 0;border-top:2px solid var(--ink)}
+.split.rev{grid-template-columns:2fr 1fr}
+.split .aside{position:sticky;top:120px;align-self:start}
+.manifest{padding:16vh 0;border-top:2px solid var(--ink)}
+.manifest h2{max-width:20ch}
+.manifest .cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:40px}
+.manifest p{font-size:1.02rem;color:var(--ink-soft)}
+.feats{list-style:none;margin-top:30px;border-top:1px solid var(--ink)}
+.feats li{padding:16px 0;border-bottom:1px solid var(--ink);display:flex;gap:18px;align-items:baseline;font-size:1rem}
+.feats li span:first-child{font-family:var(--serif);font-style:italic;color:var(--amber);font-size:1.3rem;min-width:2.2ch}
+
+/* tilt wrapper */
+.tilt{will-change:transform;transition:transform .2s var(--ease);transform-style:preserve-3d}
+
+/* mockups */
+.mock-phone{width:min(340px,80vw);border:2px solid var(--ink);background:var(--paper-2);box-shadow:12px 12px 0 var(--ink);padding:16px}
+.mock-phone .bar{height:8px;width:44px;background:var(--ink);margin:0 auto 16px}
+.mock-rec{border:2px solid var(--ink);background:var(--paper);padding:20px 16px;text-align:center}
+.mock-rec .dot{width:52px;height:52px;background:var(--amber);border:2px solid var(--ink);border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;font-size:1.4rem}
+.wave{display:flex;align-items:center;justify-content:center;gap:3px;height:44px;margin:8px 0}
+.wave i{width:4px;background:var(--ink);animation:w 1.1s ease-in-out infinite}
+@keyframes w{0%,100%{height:8px}50%{height:38px}}
+.mock-cap{font-size:.72rem;color:var(--ink-soft);margin-top:10px}
+.mock-line{display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding:9px 0;font-size:.8rem}
+.mock-line b{color:var(--amber)}
+.mock-dash{width:min(520px,90vw);border:2px solid var(--ink);background:var(--paper-2);box-shadow:12px 12px 0 var(--ink);padding:18px}
+.mock-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.mc{border:2px solid var(--ink);padding:12px;background:var(--paper)}
+.mc.amber{background:var(--amber-soft)}
+.mc .n{font-family:var(--serif);font-size:2rem;line-height:1;font-weight:600}
+.mc .l{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-top:4px}
+.tabs{display:flex;gap:6px;margin-top:14px}
+.tab{font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:7px 11px;border:2px solid var(--ink);background:var(--paper)}
+.tab.on{background:var(--ink);color:var(--paper)}
+.slot{border:2px dashed var(--ink);background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(20,20,20,.05) 12px,rgba(20,20,20,.05) 13px);min-height:360px;display:grid;place-items:center;text-align:center;color:var(--ink-soft);font-size:.78rem;letter-spacing:.05em;padding:20px}
+.slot b{display:block;font-family:var(--serif);font-style:italic;font-size:1.4rem;color:var(--ink);margin-bottom:6px}
+/* captures reals de l'app, tractades com a retall de revista */
+.shot{display:block;width:100%;border:2px solid var(--ink);box-shadow:12px 12px 0 var(--ink);background:var(--paper)}
+.shot-w{width:min(300px,78vw)}
+.shot-w.sm{width:min(238px,66vw)}
+
+.price{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);margin-top:40px}
+.price .cell{padding:34px;border-right:2px solid var(--ink)}
+.price .cell:last-child{border-right:none;background:var(--ink);color:var(--paper)}
+.price .big{font-family:var(--serif);font-size:clamp(3rem,7vw,5rem);line-height:1;font-weight:600}
+.price .big small{font-size:1rem;font-family:var(--mono);color:var(--ink-soft)}
+.price .cell:last-child .big small{color:var(--amber-soft)}
+.price .desc{margin-top:14px;font-size:.9rem;color:var(--ink-soft)}
+.price .cell:last-child .desc{color:#cfc9bd}
+
+.end{padding:24vh 0 16vh;border-top:2px solid var(--ink)}
+.end h2{font-size:clamp(3.5rem,15vw,13rem);line-height:.82}
+.end .cta-row{margin-top:56px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+footer{border-top:2px solid var(--ink);padding:40px 5vw;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:.78rem}
+footer a{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+
+@media(max-width:860px){
+  .hero-grid,.split,.split.rev,.manifest .cols,.mock-cards,.price{grid-template-columns:1fr;gap:30px}
+  .split .aside{position:static}
+  .price .cell{border-right:none;border-bottom:2px solid var(--ink)}
+  nav .brand{font-size:.9rem}.nav-right{gap:12px}.navcta{padding:6px 10px;font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.mask{clip-path:none}.rl>*,.fade{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="word"><span>TaxiCount</span></div></div>
+<svg class="noise"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+<div class="cursor"><span class="lbl" data-i18n="cur">veure</span></div>
+
+<nav>
+  <div class="brand">TAXICOUNT</div>
+  <div class="nav-right">
+    <div class="langs"><button data-lang="ca" class="on">CA</button><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
+    <a class="navcta" data-cta href="https://taxicountuser.github.io/Didac/" data-i18n="nav_cta">Prova-ho</a>
+  </div>
+</nav>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow" data-i18n="hero_eye">TaxiCount — Gestió de flotes de taxi</div>
+  <h1 id="h1">
+    <span class="rl"><span data-i18n="hero_h1a">Parla.</span></span>
+    <span class="rl"><span data-i18n="hero_h1b">Ja està</span></span>
+    <span class="rl"><span class="amber" data-i18n="hero_h1c">apuntat.</span></span>
+  </h1>
+  <div class="hero-grid">
+    <p class="hero-intro fade" data-i18n="hero_intro">Dictes la carrera mentre condueixes. El sistema l'apunta, la classifica i la deixa <b>llesta per al trimestre</b>. Sense llibretes, sense tickets perduts, sense passar la nit amb l'Excel.</p>
+    <div class="hero-cta fade">
+      <div class="tilt shot-w sm" style="margin-bottom:6px"><img class="shot" src="img/app-home.jpg" alt="App TaxiCount"></div>
+      <a class="btn" data-cta href="https://taxicountuser.github.io/Didac/" data-i18n="hero_cta">Prova-ho 15 dies gratis</a><span class="hero-note" data-i18n="hero_note">Sense targeta · Web i Android</span></div>
+  </div>
+  <div class="scrollhint" data-i18n="scroll">↓ Baixa</div>
+</div></section>
+
+<div class="marq"><div class="track" data-speed="30"><span data-i18n="t1">Registre per veu</span><span data-i18n="t2">Informes per a Hisenda</span><span data-i18n="t3">Gestió de flota</span><span data-i18n="t4">Avisos de manteniment</span><span data-i18n="t1b">Registre per veu</span><span data-i18n="t2b">Informes per a Hisenda</span><span data-i18n="t3b">Gestió de flota</span><span data-i18n="t4b">Avisos de manteniment</span></div></div>
+
+<section><div class="wrap manifest">
+  <h2 class="fade"><span data-i18n="prob_h">Una flota no es perd per falta de carreres. Es perd per la paperassa.</span></h2>
+  <div class="cols"><p class="fade" data-i18n="prob_b1">Cada dia són desenes de carreres, despeses, quilòmetres, ITV que caduquen, conductors que van i vénen. Tot en llibretes, tiquets i caps que ho recorden a mitges.</p><p class="fade" data-i18n="prob_b2">TaxiCount ho recull mentre treballes i t'ho torna ordenat: números clars, documents llestos i una flota que no se t'escapa de les mans.</p></div>
+</div></section>
+
+<section><div class="wrap split">
+  <div class="aside fade"><div class="kicker">01 — <b data-i18n="voice_k">La veu</b></div><p class="lead" data-i18n="voice_b">Prems, parles —<b>"seixanta euros, targeta, aeroport"</b>— i queda registrat amb import, mètode i lloc. La transcripció i el desglossament els fa el sistema. Tu al volant.</p></div>
+  <div class="fade">
+    <h2 style="margin-bottom:40px" data-i18n="voice_h">Registrar una carrera dura el que dura dir-la.</h2>
+    <div class="tilt mask shot-w" data-par="0.12"><img class="shot" src="img/app-voice.jpg" alt="Registre per veu"></div>
+  </div>
+</div></section>
+
+<section><div class="wrap split rev">
+  <div class="fade"><h2 data-i18n="fleet_h">Tots els cotxes i tots els conductors, en una pantalla.</h2>
+    <ul class="feats"><li><span>i.</span><span data-i18n="fleet_f1">Vehicles i quilòmetres al dia</span></li><li><span>ii.</span><span data-i18n="fleet_f2">Avisos de manteniment: 30 · 15 · 7 · 1 dies i per km</span></li><li><span>iii.</span><span data-i18n="fleet_f3">Xat directe jefe ↔ conductor</span></li><li><span>iv.</span><span data-i18n="fleet_f4">Conductors, assignacions i llicències</span></li></ul>
+  </div>
+  <div class="aside fade"><div class="kicker">02 — <b data-i18n="fleet_k">La flota</b></div><p class="lead" data-i18n="fleet_b">Assignes vehicles, controles els quilòmetres i reps un avís quan s'acosta l'ITV, l'assegurança o la revisió. Sense sortir de l'app.</p></div>
+</div></section>
+
+<section><div class="wrap split">
+  <div class="aside fade"><div class="kicker">03 — <b data-i18n="tax_k">El trimestre</b></div></div>
+  <div class="fade"><h2 data-i18n="tax_h">El trimestre, resolt.</h2><p class="lead" style="margin-top:24px" data-i18n="tax_b">Ingressos i despeses classificats. Exportes a <b>Excel o PDF</b> i ho tens llest per a la gestoria. El que abans era una nit sencera, ara és un botó.</p></div>
+</div></section>
+
+<section><div class="wrap split rev">
+  <div class="fade"><h2 data-i18n="num_h">Pagues pels conductors que tens. Ni un més.</h2>
+    <div class="price"><div class="cell"><div class="big">2,50<small> €/mes</small></div><div class="desc" data-i18n="num_d1">per conductor, facturació mensual</div></div><div class="cell"><div class="big">30<small> €/any</small></div><div class="desc" data-i18n="num_d2">per conductor, si pagues l'any</div></div></div>
+  </div>
+  <div class="aside fade"><div class="kicker">04 — <b data-i18n="num_k">Els números</b></div><p class="lead" data-i18n="num_b"><b>15 dies de prova</b> sense targeta. Sense permanència, sense lletra petita. Amplies o redueixes asients quan vulguis i només pagues la diferència.</p></div>
+</div></section>
+
+<section><div class="wrap split rev">
+  <div class="fade">
+    <div class="kicker">05 — <b data-i18n="rew_k">Recompenses</b></div>
+    <h2 data-i18n="rew_h">Com més fas servir l'app, menys pagues.</h2>
+    <p class="lead" data-i18n="rew_b1">Els teus conductors completen reptes de quilòmetres i d'activitat, i tu guanyes <b style="color:var(--ink)">dies gratis</b> de subscripció.</p>
+    <p class="lead" style="margin-top:16px" data-i18n="rew_b2">Convides una altra flota amb el teu codi i, quan es queda, tots dos hi guanyeu. Creixes tu, creix la teva factura a la baixa.</p>
+  </div>
+  <div class="aside fade">
+    <div class="tilt mask shot-w" data-par="0.1"><img class="shot" src="img/app-challenges.jpg" alt="Els meus reptes"></div>
+  </div>
+</div></section>
+
+<section><div class="wrap end">
+  <h2><span class="rl"><span data-i18n="end_1">Menys paperassa.</span></span><span class="rl"><span style="color:var(--amber)" data-i18n="end_2">Més volant.</span></span></h2>
+  <div class="cta-row fade"><a class="btn" data-cta href="https://taxicountuser.github.io/Didac/" data-i18n="end_cta">Prova-ho 15 dies gratis</a><span class="hero-note" data-i18n="end_note">Sense targeta · Web i Android</span></div>
+</div></section>
+
+<footer><div class="brand">TAXICOUNT</div><div><span data-i18n="foot_q">Gestió de flotes de taxi</span> · <a data-cta href="mailto:didakdp.5@gmail.com">didakdp.5@gmail.com</a></div><div><a data-cta href="https://taxicountuser.github.io/Didac/" data-i18n="foot_app">Obrir l'app →</a></div></footer>
+
+<script>
+const I18N={
+  ca:{cur:"veure",nav_cta:"Prova-ho",hero_eye:"TaxiCount — Gestió de flotes de taxi",hero_h1a:"Parla.",hero_h1b:"Ja està",hero_h1c:"apuntat.",hero_intro:'Dictes la carrera mentre condueixes. El sistema l\'apunta, la classifica i la deixa <b>llesta per al trimestre</b>. Sense llibretes, sense tickets perduts, sense passar la nit amb l\'Excel.',hero_cta:"Prova-ho 15 dies gratis",hero_note:"Sense targeta · Web i Android",scroll:"↓ Baixa",t1:"Registre per veu",t2:"Informes per a Hisenda",t3:"Gestió de flota",t4:"Avisos de manteniment",t1b:"Registre per veu",t2b:"Informes per a Hisenda",t3b:"Gestió de flota",t4b:"Avisos de manteniment",prob_h:"Una flota no es perd per falta de carreres. Es perd per la paperassa.",prob_b1:"Cada dia són desenes de carreres, despeses, quilòmetres, ITV que caduquen, conductors que van i vénen. Tot en llibretes, tiquets i caps que ho recorden a mitges.",prob_b2:"TaxiCount ho recull mentre treballes i t'ho torna ordenat: números clars, documents llestos i una flota que no se t'escapa de les mans.",voice_k:"La veu",voice_h:"Registrar una carrera dura el que dura dir-la.",voice_b:'Prems, parles —<b>"seixanta euros, targeta, aeroport"</b>— i queda registrat amb import, mètode i lloc. La transcripció i el desglossament els fa el sistema. Tu al volant.',voice_cap:'"Seixanta euros, targeta, aeroport"',voice_r1:"Import",voice_r2:"Mètode",voice_r2v:"Targeta",voice_r3:"Lloc",voice_r3v:"Aeroport",fleet_k:"La flota",fleet_h:"Tots els cotxes i tots els conductors, en una pantalla.",fleet_b:"Assignes vehicles, controles els quilòmetres i reps un avís quan s'acosta l'ITV, l'assegurança o la revisió. Sense sortir de l'app.",fleet_f1:"Vehicles i quilòmetres al dia",fleet_f2:"Avisos de manteniment: 30 · 15 · 7 · 1 dies i per km",fleet_f3:"Xat directe jefe ↔ conductor",fleet_f4:"Conductors, assignacions i llicències",fleet_d:"La teva flota",fleet_c1:"Conductors",fleet_c2:"Vehicles",fleet_c3:"Avisos ITV",fleet_c4:"Carreres avui",fleet_biz:"La teva empresa",fleet_profit:"Beneficis",fleet_exp:"Despeses",fleet_t1:"Vehicles",fleet_t2:"Conductors",fleet_t3:"Missatges",tax_k:"El trimestre",tax_h:"El trimestre, resolt.",tax_b:"Ingressos i despeses classificats. Exportes a <b>Excel o PDF</b> i ho tens llest per a la gestoria. El que abans era una nit sencera, ara és un botó.",slot1:"Captura de l'app",slot_sub:"informe trimestral / exportació",num_k:"Els números",num_h:"Pagues pels conductors que tens. Ni un més.",num_d1:"per conductor, facturació mensual",num_d2:"per conductor, si pagues l'any",num_b:"<b>15 dies de prova</b> sense targeta. Sense permanència, sense lletra petita. Amplies o redueixes asients quan vulguis i només pagues la diferència.",rew_k:"Recompenses",rew_h:"Com més fas servir l'app, menys pagues.",rew_b1:'Els teus conductors completen reptes de quilòmetres i d\'activitat, i tu guanyes <b style="color:var(--ink)">dies gratis</b> de subscripció.',rew_b2:"Convides una altra flota amb el teu codi i, quan es queda, tots dos hi guanyeu. Creixes tu, creix la teva factura a la baixa.",end_1:"Menys paperassa.",end_2:"Més volant.",end_cta:"Prova-ho 15 dies gratis",end_note:"Sense targeta · Web i Android",foot_q:"Gestió de flotes de taxi",foot_app:"Obrir l'app →"},
+  es:{cur:"ver",nav_cta:"Pruébalo",hero_eye:"TaxiCount — Gestión de flotas de taxi",hero_h1a:"Habla.",hero_h1b:"Ya está",hero_h1c:"apuntado.",hero_intro:'Dictas la carrera mientras conduces. El sistema la apunta, la clasifica y la deja <b>lista para el trimestre</b>. Sin libretas, sin tickets perdidos, sin pasar la noche con el Excel.',hero_cta:"Pruébalo 15 días gratis",hero_note:"Sin tarjeta · Web y Android",scroll:"↓ Baja",t1:"Registro por voz",t2:"Informes para Hacienda",t3:"Gestión de flota",t4:"Avisos de mantenimiento",t1b:"Registro por voz",t2b:"Informes para Hacienda",t3b:"Gestión de flota",t4b:"Avisos de mantenimiento",prob_h:"Una flota no se pierde por falta de carreras. Se pierde por el papeleo.",prob_b1:"Cada día son decenas de carreras, gastos, kilómetros, ITV que caducan, conductores que van y vienen. Todo en libretas, tickets y jefes que lo recuerdan a medias.",prob_b2:"TaxiCount lo recoge mientras trabajas y te lo devuelve ordenado: números claros, documentos listos y una flota que no se te escapa de las manos.",voice_k:"La voz",voice_h:"Registrar una carrera dura lo que dura decirla.",voice_b:'Pulsas, hablas —<b>"sesenta euros, tarjeta, aeropuerto"</b>— y queda registrado con importe, método y lugar. La transcripción y el desglose los hace el sistema. Tú al volante.',voice_cap:'"Sesenta euros, tarjeta, aeropuerto"',voice_r1:"Importe",voice_r2:"Método",voice_r2v:"Tarjeta",voice_r3:"Lugar",voice_r3v:"Aeropuerto",fleet_k:"La flota",fleet_h:"Todos los coches y todos los conductores, en una pantalla.",fleet_b:"Asignas vehículos, controlas los kilómetros y recibes un aviso cuando se acerca la ITV, el seguro o la revisión. Sin salir de la app.",fleet_f1:"Vehículos y kilómetros al día",fleet_f2:"Avisos de mantenimiento: 30 · 15 · 7 · 1 días y por km",fleet_f3:"Chat directo jefe ↔ conductor",fleet_f4:"Conductores, asignaciones y licencias",fleet_d:"Tu flota",fleet_c1:"Conductores",fleet_c2:"Vehículos",fleet_c3:"Avisos ITV",fleet_c4:"Carreras hoy",fleet_biz:"Tu empresa",fleet_profit:"Beneficios",fleet_exp:"Gastos",fleet_t1:"Vehículos",fleet_t2:"Conductores",fleet_t3:"Mensajes",tax_k:"El trimestre",tax_h:"El trimestre, resuelto.",tax_b:"Ingresos y gastos clasificados. Exportas a <b>Excel o PDF</b> y lo tienes listo para la gestoría. Lo que antes era una noche entera, ahora es un botón.",slot1:"Captura de la app",slot_sub:"informe trimestral / exportación",num_k:"Los números",num_h:"Pagas por los conductores que tienes. Ni uno más.",num_d1:"por conductor, facturación mensual",num_d2:"por conductor, si pagas el año",num_b:"<b>15 días de prueba</b> sin tarjeta. Sin permanencia, sin letra pequeña. Amplías o reduces asientos cuando quieras y solo pagas la diferencia.",rew_k:"Recompensas",rew_h:"Cuanto más usas la app, menos pagas.",rew_b1:'Tus conductores completan retos de kilómetros y de actividad, y tú ganas <b style="color:var(--ink)">días gratis</b> de suscripción.',rew_b2:"Invitas a otra flota con tu código y, cuando se queda, ambos ganáis. Creces tú, baja tu factura.",end_1:"Menos papeleo.",end_2:"Más volante.",end_cta:"Pruébalo 15 días gratis",end_note:"Sin tarjeta · Web y Android",foot_q:"Gestión de flotas de taxi",foot_app:"Abrir la app →"},
+  en:{cur:"view",nav_cta:"Try it",hero_eye:"TaxiCount — Taxi fleet management",hero_h1a:"Speak.",hero_h1b:"It's already",hero_h1c:"logged.",hero_intro:'Dictate the ride while you drive. The system logs it, sorts it and leaves it <b>ready for the tax quarter</b>. No notebooks, no lost receipts, no nights with a spreadsheet.',hero_cta:"Try it 15 days free",hero_note:"No card · Web & Android",scroll:"↓ Scroll",t1:"Voice logging",t2:"Tax-ready reports",t3:"Fleet management",t4:"Maintenance alerts",t1b:"Voice logging",t2b:"Tax-ready reports",t3b:"Fleet management",t4b:"Maintenance alerts",prob_h:"A fleet isn't lost for lack of rides. It's lost to paperwork.",prob_b1:"Every day it's dozens of rides, expenses, kilometres, expiring inspections, drivers coming and going. All in notebooks, receipts and half-remembered by the boss.",prob_b2:"TaxiCount captures it while you work and hands it back in order: clear numbers, ready documents and a fleet that doesn't slip through your fingers.",voice_k:"The voice",voice_h:"Logging a ride takes as long as saying it.",voice_b:'Press, speak —<b>"sixty euros, card, airport"</b>— and it\'s logged with amount, method and place. The transcription and breakdown are on the system. You stay on the wheel.',voice_cap:'"Sixty euros, card, airport"',voice_r1:"Amount",voice_r2:"Method",voice_r2v:"Card",voice_r3:"Place",voice_r3v:"Airport",fleet_k:"The fleet",fleet_h:"Every car and every driver, on one screen.",fleet_b:"Assign vehicles, track kilometres and get an alert when the inspection, insurance or service is due. Without leaving the app.",fleet_f1:"Vehicles and daily kilometres",fleet_f2:"Maintenance alerts: 30 · 15 · 7 · 1 days and by km",fleet_f3:"Direct boss ↔ driver chat",fleet_f4:"Drivers, assignments and licences",fleet_d:"Your fleet",fleet_c1:"Drivers",fleet_c2:"Vehicles",fleet_c3:"Inspection alerts",fleet_c4:"Rides today",fleet_biz:"Your company",fleet_profit:"Profit",fleet_exp:"Expenses",fleet_t1:"Vehicles",fleet_t2:"Drivers",fleet_t3:"Messages",tax_k:"The quarter",tax_h:"The tax quarter, sorted.",tax_b:"Income and expenses classified. Export to <b>Excel or PDF</b> and hand it to your accountant. What used to be a whole night is now one button.",slot1:"App screenshot",slot_sub:"quarterly report / export",num_k:"The numbers",num_h:"You pay for the drivers you have. Not one more.",num_d1:"per driver, monthly billing",num_d2:"per driver, paid yearly",num_b:"<b>15-day trial</b>, no card. No lock-in, no fine print. Add or remove seats whenever you want and only pay the difference.",rew_k:"Rewards",rew_h:"The more you use the app, the less you pay.",rew_b1:'Your drivers complete kilometre and activity challenges, and you earn <b style="color:var(--ink)">free days</b> of subscription.',rew_b2:"Invite another fleet with your code and, when they stay, you both win. You grow, your bill shrinks.",end_1:"Less paperwork.",end_2:"More driving.",end_cta:"Try it 15 days free",end_note:"No card · Web & Android",foot_q:"Taxi fleet management",foot_app:"Open the app →"}
+};
+function setLang(l){document.documentElement.lang=l;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[l][k]!==undefined)el.innerHTML=I18N[l][k]});document.querySelectorAll('.langs button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));try{localStorage.setItem('tc_lang',l)}catch(e){}}
+document.querySelectorAll('.langs button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+let saved='ca';try{saved=localStorage.getItem('tc_lang')||'ca'}catch(e){}if(saved!=='ca')setLang(saved);
+
+/* Loader + revelat del hero. Es dispara amb DOMContentLoaded (no espera fonts
+   ni imatges) perquè l'H1 mai es quedi amagat si una font externa triga. */
+function startHero(){
+  var l=document.getElementById('loader'); if(l) setTimeout(function(){l.classList.add('done')},700);
+  setTimeout(function(){
+    document.querySelectorAll('.hero .rl').forEach(function(el,i){setTimeout(function(){el.classList.add('in')},i*130)});
+    document.querySelectorAll('.hero .fade').forEach(function(el,i){setTimeout(function(){el.classList.add('in')},250+i*130)});
+  },760);
+  /* Failsafe: passats 2.2s, RES no pot quedar amagat (cobreix el cas d'un preview
+     estàtic sense scroll en viu o un IntersectionObserver que no dispari). */
+  setTimeout(function(){document.querySelectorAll('.rl,.fade,.mask').forEach(function(el){el.classList.add('in')})},2200);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startHero); else startHero();
+
+/* Reveals */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14});
+document.querySelectorAll('.fade,.rl,.mask').forEach(el=>{if(!el.closest('.hero'))io.observe(el)});
+
+/* Cursor elàstic */
+const cur=document.querySelector('.cursor');let cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
+if(matchMedia('(hover:hover)').matches){
+  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY});
+  (function loop(){cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;cur.style.transform=`translate3d(${cx-10}px,${cy-10}px,0)`;requestAnimationFrame(loop)})();
+  document.querySelectorAll('a,button,.tilt,[data-cta]').forEach(el=>{el.addEventListener('mouseenter',()=>cur.classList.add('big'));el.addEventListener('mouseleave',()=>cur.classList.remove('big'))});
+}
+
+/* Parallax + Ken Burns via scroll */
+const pars=[...document.querySelectorAll('[data-par]')];
+const h1=document.getElementById('h1');
+function onScroll(){
+  const y=scrollY;
+  pars.forEach(el=>{const r=el.getBoundingClientRect();const c=(r.top+r.height/2-innerHeight/2);el.style.transform=`translate3d(0,${c*-parseFloat(el.dataset.par)}px,0)`});
+  if(h1) h1.style.transform=`translate3d(0,${y*.18}px,0)`;
+}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* Tipografia cinètica: H1 segueix el ratolí */
+if(matchMedia('(hover:hover)').matches&&h1){
+  addEventListener('mousemove',e=>{const dx=(e.clientX/innerWidth-.5)*30;h1.style.setProperty('--mx',dx+'px')});
+  h1.style.transition='transform .1s linear';
+  const base=h1.style.transform;
+  addEventListener('mousemove',e=>{const dx=(e.clientX/innerWidth-.5)*24;h1.style.transform=`translate3d(${dx}px,${scrollY*.18}px,0)`});
+}
+
+/* Tilt 3D */
+if(matchMedia('(hover:hover)').matches){
+  document.querySelectorAll('.tilt').forEach(el=>{
+    el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect();const px=(e.clientX-r.left)/r.width-.5;const py=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(900px) rotateY(${px*8}deg) rotateX(${-py*8}deg)`});
+    el.addEventListener('mouseleave',()=>{el.style.transform='perspective(900px) rotateY(0) rotateX(0)'});
+  });
+}
+
+/* Marquee (duplicat ja al HTML, animació JS per velocitat) */
+document.querySelectorAll('.marq .track').forEach(t=>{let x=0;const sp=parseFloat(t.dataset.speed||30)/60;function m(){x-=sp;if(Math.abs(x)>=t.scrollWidth/2)x=0;t.style.transform=`translateX(${x}px)`;requestAnimationFrame(m)}m()});
+
+/* Canvi sutil de fons per zones */
+const zones=[...document.querySelectorAll('.split,.manifest')];
+addEventListener('scroll',()=>{const mid=innerHeight/2;let near=false;zones.forEach((z,i)=>{const r=z.getBoundingClientRect();if(r.top<mid&&r.bottom>mid&&i%2===1)near=true});document.body.style.background=near?'#f0e6e0':'var(--paper)'},{passive:true});
+</script>
+</body>
+</html>
