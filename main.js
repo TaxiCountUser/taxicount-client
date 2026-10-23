@@ -43,7 +43,7 @@ const I18N = {
     s3_f1: 'Cada carrera amb el seu cotxe i el seu conductor', s3_f2: 'Xat entre el titular i cada conductor', s3_f3: 'Recordatoris d\'ITV, assegurança i manteniment', s3_f4: 'Revisa la comptabilitat en temps real',
     rep_title: 'Informe trimestral', rep_client: 'per client', rep_conductor: 'per conductor', rep_dia: 'per dia',
     meter_label: 'TARIFA', meter_per: 'per conductor al mes', meter_year: 'Anual', meter_year_short: 'l\'any', meter_trial: 'Prova', meter_trial_v: '15 dies gratis', meter_promo: 'Codi',
-    foot_privacy: 'Política de privacitat', foot_credits: 'Crèdits 3D (CC BY 4.0)',
+    foot_privacy: 'Política de privacitat',
     title: 'TaxiCount — Parla i apunta la carrera',
   },
   es: {
@@ -73,7 +73,7 @@ const I18N = {
     s3_f1: 'Cada carrera con su coche y su conductor', s3_f2: 'Chat entre el titular y cada conductor', s3_f3: 'Recordatorios de ITV, seguro y mantenimiento', s3_f4: 'Revisa la contabilidad en tiempo real',
     rep_title: 'Informe trimestral', rep_client: 'por cliente', rep_conductor: 'por conductor', rep_dia: 'por día',
     meter_label: 'TARIFA', meter_per: 'por conductor al mes', meter_year: 'Anual', meter_year_short: 'al año', meter_trial: 'Prueba', meter_trial_v: '15 días gratis', meter_promo: 'Código',
-    foot_privacy: 'Política de privacidad', foot_credits: 'Créditos 3D (CC BY 4.0)',
+    foot_privacy: 'Política de privacidad',
     title: 'TaxiCount — Habla y apunta la carrera',
   },
 };
@@ -115,7 +115,8 @@ function start3d() {
 }
 async function startVideo() {
   const v = ride.video;
-  if (force3d || !v || !v.canPlayType || !v.canPlayType('video/mp4')) return start3d();
+  if (force3d) return start3d();
+  if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) { document.documentElement.classList.add('video-mode'); return; }
   document.documentElement.classList.add('video-mode');
   const src = window.innerWidth >= 900 && !mobile ? 'assets/video/ride-1080.mp4' : 'assets/video/ride-720.mp4';
   try {
@@ -127,8 +128,8 @@ async function startVideo() {
     rideLoop();
     console.info('[landing] vídeo del recorregut llest', src, ride.duration.toFixed(1) + ' s');
   } catch (e) {
-    console.warn('[landing] vídeo no disponible, escena 3D', e);
-    start3d();
+    // Sense vídeo es queda el fotograma fix (poster): a la web pública NO es serveixen els models 3D.
+    console.warn('[landing] vídeo no disponible: fotograma fix', e);
   }
 }
 let seeking = false;
