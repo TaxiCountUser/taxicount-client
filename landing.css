@@ -49,8 +49,13 @@ html.no-webgl #static-bg { display: block; }
 .top {
   position: fixed; inset: 0 0 auto 0; z-index: 3;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px var(--gutter);
+  padding: 14px var(--gutter);
   pointer-events: none;
+  /* Fons que difumina el que hi passa per sota (text de les parades) perquè la marca i els botons es llegeixin sempre. */
+  background: linear-gradient(180deg, rgba(30,27,22,.82) 0%, rgba(30,27,22,.55) 70%, rgba(30,27,22,0) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%); mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
+  padding-bottom: 26px;
 }
 .top > * { pointer-events: auto; }
 .brand img { height: 36px; width: auto; display: block; }
@@ -75,7 +80,8 @@ html.no-webgl #static-bg { display: block; }
 .route a::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--crema-70); background: var(--negre); transition: background .3s, border-color .3s; }
 .route a span { opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s; }
 .route a:hover span, .route a:focus-visible span { opacity: 1; transform: none; }
-@media (min-width: 1200px) { .route li.is-active a span { opacity: 1; transform: none; } }
+/* L'etiqueta de la parada només en passar-hi el ratolí (sempre visible trepitjava els textos). */
+.route a span { background: rgba(30,27,22,.75); padding: 4px 8px; border-radius: 6px; }
 .route li.is-active a { color: var(--ambre); }
 .route li.is-active a::before, .route li.is-done a::before { border-color: var(--ambre); background: var(--ambre); }
 .route-line { position: absolute; left: 4px; top: 5px; bottom: 5px; width: 2px; background: rgba(254,247,236,.18); }
@@ -83,7 +89,7 @@ html.no-webgl #static-bg { display: block; }
 
 /* Seccions */
 main { position: relative; z-index: 1; }
-.stop { min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding: 20vh var(--gutter) 20vh calc(var(--gutter) + 56px); }
+.stop { min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding: 20vh var(--gutter) 20vh calc(var(--gutter) + 64px); }
 .stop .copy { max-width: 36rem; }
 .stop:nth-child(even) .copy { margin-left: auto; }
 .stop.quiet .copy { max-width: 44rem; margin-inline: auto; text-align: center; }
