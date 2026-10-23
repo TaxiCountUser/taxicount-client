@@ -17,7 +17,7 @@ const routeFill = document.getElementById('route-fill');
 // ---------- Idioma (ca per defecte, es a un toc) ----------
 const I18N = {
   ca: {
-    hero_h: 'Parla i apunta la carrera',
+    hero_h: 'Parla i apunta la carrera.',
     hero_p: 'Dicta el teu servei i TaxiCount l\'apunta. L\'app dels taxistes.',
     hero_scroll: 'Descobreix TaxiCount', top_enter: 'Entrar',
     cta_play: 'Descarrega-la a Google Play', cta_trial: 'Prova 15 dies gratis',
@@ -47,7 +47,7 @@ const I18N = {
     title: 'TaxiCount — Parla i apunta la carrera',
   },
   es: {
-    hero_h: 'Habla y apunta la carrera',
+    hero_h: 'Habla y apunta la carrera.',
     hero_p: 'Dicta tu servicio y TaxiCount lo apunta. La app de los taxistas.',
     hero_scroll: 'Descubre TaxiCount', top_enter: 'Entrar',
     cta_play: 'Descárgala en Google Play', cta_trial: 'Prueba 15 días gratis',
