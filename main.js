@@ -93,7 +93,7 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 // ---------- Fons: vídeo real controlat per l'scroll; escena 3D com a reserva ----------
 // El vídeo (vista del conductor) avança amb l'scroll: p ∈ [0,1] → currentTime. Es carrega sencer com a
 // blob perquè el «seek» sigui instantani i funcioni a iOS; el fitxer està codificat amb un fotograma
-// clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. ?bg=3d força l'escena 3D.
+// clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. ?bg=3d força l'escena 3D. En canviar el vídeo, puja el ?v= (el navegador el guarda amb el mateix nom).
 let scene3d = null;
 const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0 };
 const force3d = new URLSearchParams(location.search).get('bg') === '3d';
@@ -118,7 +118,7 @@ async function startVideo() {
   if (force3d) return start3d();
   if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) { document.documentElement.classList.add('video-mode'); return; }
   document.documentElement.classList.add('video-mode');
-  const src = window.innerWidth >= 900 && !mobile ? 'assets/video/ride-1080.mp4' : 'assets/video/ride-720.mp4';
+  const src = window.innerWidth >= 900 && !mobile ? 'assets/video/ride-1080.mp4?v=2' : 'assets/video/ride-720.mp4?v=2';
   try {
     const res = await fetch(src); if (!res.ok) throw new Error(res.status);
     v.src = URL.createObjectURL(await res.blob());
