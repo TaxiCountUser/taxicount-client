@@ -2,7 +2,8 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { hasWebGL, createScene, STOPS } from './scene.js';
+// scene.js (three.js + 9 complements del CDN) NOMÉS es baixa si cal l'escena 3D (import dinàmic a start3d):
+// importat d'entrada bloquejava main.js —i per tant el text i les captures, opacity 0 fins a .is-in— al mòbil.
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ const mobile = forcedQ ? forcedQ === 'low' : (window.innerWidth < 768 || window.
 const sections = [...document.querySelectorAll('.stop')];
 const navItems = [...document.querySelectorAll('.route li')];
 const routeFill = document.getElementById('route-fill');
+const N_STOPS = sections.length; // = STOPS.length de scene.js (una secció per parada)
 
 // ---------- Idioma (ca per defecte, es a un toc) ----------
 const I18N = {
@@ -95,14 +97,16 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 // blob perquè el «seek» sigui instantani i funcioni a iOS; el fitxer està codificat amb un fotograma
 // clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. ?bg=3d força l'escena 3D. En canviar el vídeo, puja el ?v= (el navegador el guarda amb el mateix nom).
 let scene3d = null;
-const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0 };
+const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0, step: 1 / 30 };
 const force3d = new URLSearchParams(location.search).get('bg') === '3d';
-function start3d() {
+async function start3d() {
   if (scene3d || document.documentElement.classList.contains('no-webgl')) return;
   document.documentElement.classList.remove('video-mode');
-  if (hasWebGL()) {
+  let mod = null;
+  try { mod = await import('./scene.js'); } catch (e) { console.error('[landing] no s\'ha pogut carregar scene.js', e); }
+  if (mod && mod.hasWebGL()) {
     try {
-      scene3d = createScene(document.getElementById('scene'), { reducedMotion: reduced, mobile });
+      scene3d = mod.createScene(document.getElementById('scene'), { reducedMotion: reduced, mobile });
       scene3d.start();
       window.tcScene = scene3d; // per depurar des de la consola
     } catch (e) {
@@ -118,9 +122,14 @@ async function startVideo() {
   if (force3d) return start3d();
   if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) { document.documentElement.classList.add('video-mode'); return; }
   document.documentElement.classList.add('video-mode');
-  const src = window.innerWidth >= 900 && !mobile ? 'assets/video/ride-1080.mp4?v=2' : 'assets/video/ride-720.mp4?v=2';
+  const big = window.innerWidth >= 900 && !mobile;
+  // Mòbil: 15 fps i TOT fotogrames clau (-g 1) perquè cada seek descodifiqui 1 sol fotograma (Android anava a salts).
+  const src = big ? 'assets/video/ride-1080.mp4?v=2' : 'assets/video/ride-720.mp4?v=3';
+  ride.step = big ? 1 / 30 : 1 / 15;
+  // El vídeo (5–10 MB) no ha de competir amb el text, les fonts i les captures: es baixa després del load.
+  if (document.readyState !== 'complete') await new Promise((ok) => window.addEventListener('load', ok, { once: true }));
   try {
-    const res = await fetch(src); if (!res.ok) throw new Error(res.status);
+    const res = await fetch(src, { priority: 'low' }); if (!res.ok) throw new Error(res.status);
     v.src = URL.createObjectURL(await res.blob());
     await new Promise((ok, ko) => { v.addEventListener('loadedmetadata', ok, { once: true }); v.addEventListener('error', ko, { once: true }); v.load(); });
     ride.duration = v.duration; ride.ready = true;
@@ -135,11 +144,13 @@ async function startVideo() {
 let seeking = false;
 function rideLoop() {
   const v = ride.video;
-  if (!seeking && Math.abs(v.currentTime - ride.target) > 0.02) {
+  // Seek al fotograma sencer més proper: res de seeks entre dos fotogrames (no canvien la imatge i saturen el descodificador).
+  const t = Math.round(ride.target / ride.step) * ride.step;
+  if (!seeking && Math.abs(v.currentTime - t) > ride.step / 2) {
     seeking = true;
     const done = () => { seeking = false; };
     v.addEventListener('seeked', done, { once: true });
-    v.currentTime = ride.target;
+    v.currentTime = t;
   }
   requestAnimationFrame(rideLoop);
 }
@@ -159,7 +170,7 @@ function setProgress(p) {
   scene3d?.setProgress(p);
   if (ride.ready) ride.target = reduced ? 0 : Math.min(ride.duration - 0.05, p * ride.duration);
   routeFill.style.height = `${(p * 100).toFixed(2)}%`;
-  const stop = Math.min(STOPS.length - 1, Math.floor(p * STOPS.length + 0.0001));
+  const stop = Math.min(N_STOPS - 1, Math.floor(p * N_STOPS + 0.0001));
   navItems.forEach((li, i) => { li.classList.toggle('is-active', i === stop); li.classList.toggle('is-done', i < stop); });
 }
 
@@ -169,7 +180,7 @@ if (reduced) {
     entries.forEach((en) => {
       if (!en.isIntersecting) return;
       const i = Number(en.target.dataset.stop);
-      setProgress((i + 0.999) / STOPS.length);
+      setProgress((i + 0.999) / N_STOPS);
       en.target.classList.add('is-in');
     });
   }, { threshold: 0.5 });
