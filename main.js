@@ -1,9 +1,7 @@
-// TaxiCount — landing (pas 2): scroll suau + progrés → escena, línia de recorregut, idioma.
+// TaxiCount — landing: scroll suau + progrés → vídeo del recorregut, línia de recorregut, idioma.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-// scene.js (three.js + 9 complements del CDN) NOMÉS es baixa si cal l'escena 3D (import dinàmic a start3d):
-// importat d'entrada bloquejava main.js —i per tant el text i les captures, opacity 0 fins a .is-in— al mòbil.
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,7 +12,7 @@ const mobile = forcedQ ? forcedQ === 'low' : (window.innerWidth < 768 || window.
 const sections = [...document.querySelectorAll('.stop')];
 const navItems = [...document.querySelectorAll('.route li')];
 const routeFill = document.getElementById('route-fill');
-const N_STOPS = sections.length; // = STOPS.length de scene.js (una secció per parada)
+const N_STOPS = sections.length; // una secció per parada
 
 // ---------- Idioma (ca per defecte, es a un toc) ----------
 const I18N = {
@@ -92,36 +90,14 @@ try { lang = localStorage.getItem('tc_lang') || ((navigator.language || '').toLo
 setLang(lang);
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
 
-// ---------- Fons: vídeo real controlat per l'scroll; escena 3D com a reserva ----------
+// ---------- Fons: vídeo real controlat per l'scroll ----------
 // El vídeo (vista del conductor) avança amb l'scroll: p ∈ [0,1] → currentTime. Es carrega sencer com a
 // blob perquè el «seek» sigui instantani i funcioni a iOS; el fitxer està codificat amb un fotograma
-// clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. ?bg=3d força l'escena 3D. En canviar el vídeo, puja el ?v= (el navegador el guarda amb el mateix nom).
-let scene3d = null;
+// clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. En canviar el vídeo, puja el ?v= (el navegador el guarda amb el mateix nom).
 const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0, step: 1 / 30 };
-const force3d = new URLSearchParams(location.search).get('bg') === '3d';
-async function start3d() {
-  if (scene3d || document.documentElement.classList.contains('no-webgl')) return;
-  document.documentElement.classList.remove('video-mode');
-  let mod = null;
-  try { mod = await import('./scene.js'); } catch (e) { console.error('[landing] no s\'ha pogut carregar scene.js', e); }
-  if (mod && mod.hasWebGL()) {
-    try {
-      scene3d = mod.createScene(document.getElementById('scene'), { reducedMotion: reduced, mobile });
-      scene3d.start();
-      window.tcScene = scene3d; // per depurar des de la consola
-    } catch (e) {
-      console.error('[landing] escena 3D no disponible, versió estàtica', e);
-      document.documentElement.classList.add('no-webgl');
-    }
-  } else {
-    document.documentElement.classList.add('no-webgl');
-  }
-}
 async function startVideo() {
   const v = ride.video;
-  if (force3d) return start3d();
-  if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) { document.documentElement.classList.add('video-mode'); return; }
-  document.documentElement.classList.add('video-mode');
+  if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) return; // es queda el fotograma fix (poster)
   const big = window.innerWidth >= 900 && !mobile;
   // Mòbil: 15 fps i TOT fotogrames clau (-g 1) perquè cada seek descodifiqui 1 sol fotograma (Android anava a salts).
   const src = big ? 'assets/video/ride-1080.mp4?v=2' : 'assets/video/ride-720.mp4?v=3';
@@ -137,7 +113,7 @@ async function startVideo() {
     rideLoop();
     console.info('[landing] vídeo del recorregut llest', src, ride.duration.toFixed(1) + ' s');
   } catch (e) {
-    // Sense vídeo es queda el fotograma fix (poster): a la web pública NO es serveixen els models 3D.
+    // Sense vídeo es queda el fotograma fix (poster).
     console.warn('[landing] vídeo no disponible: fotograma fix', e);
   }
 }
@@ -167,7 +143,6 @@ if (!reduced) {
 }
 
 function setProgress(p) {
-  scene3d?.setProgress(p);
   if (ride.ready) ride.target = reduced ? 0 : Math.min(ride.duration - 0.05, p * ride.duration);
   routeFill.style.height = `${(p * 100).toFixed(2)}%`;
   const stop = Math.min(N_STOPS - 1, Math.floor(p * N_STOPS + 0.0001));
