@@ -2334,24 +2334,38 @@
      "no me llegan las notificaciones",
      "las notificaciones estan bloqueadas",
      "activar avisos",
-     "campana tachada"
+     "campana tachada",
+     "no me suenan los avisos",
+     "no suena el claxon",
+     "probar aviso",
+     "aviso de prueba",
+     "no recibo avisos"
     ],
     "ca": [
-     "no em arriben les notificacions",
+     "no m'arriben les notificacions",
      "les notificacions estan bloquejades",
-     "activar avisos"
+     "activar avisos",
+     "no em sonen els avisos",
+     "no sona el clàxon",
+     "provar avís",
+     "avís de prova",
+     "no rebo avisos"
     ],
     "en": [
      "i dont get notifications",
      "notifications are blocked",
-     "enable notifications"
+     "enable notifications",
+     "notifications don't sound",
+     "test notification",
+     "no notification sound"
     ]
    },
    "a": {
-    "es": "En Ajustes, la campana de arriba indica si las notificaciones están activas. Si está tachada, pulsa «Abrir ajustes» y permite las notificaciones de TaxiCount en el móvil. Sin ellas no te enterarás de los mensajes del jefe ni de las respuestas de soporte.",
-    "ca": "A Ajustos, la campana de dalt indica si les notificacions estan actives. Si està ratllada, prem «Obrir ajustos» i permet les notificacions de TaxiCount al mòbil. Sense elles no t'assabentaràs dels missatges del cap ni de les respostes de suport.",
-    "en": "In Settings, the bell at the top shows whether notifications are on. If it's crossed out, tap “Open settings” and allow TaxiCount notifications on your phone. Without them you'll miss messages from your boss and support replies."
-   }
+    "es": "En Ajustes, la campana de arriba indica si las notificaciones están activas. Si está tachada, pulsa «Abrir ajustes» y permite las notificaciones de TaxiCount en el móvil. Sin ellas no te enterarás de los mensajes del jefe ni de las respuestas de soporte. Si ya las tienes activas y aun así no te suenan, pulsa «Probar aviso»: te mandamos uno de prueba al momento y, si este móvil no ha quedado apuntado a tu cuenta, te decimos qué hacer.",
+    "ca": "A Ajustos, la campana de dalt indica si les notificacions estan actives. Si està ratllada, prem «Obrir ajustos» i permet les notificacions de TaxiCount al mòbil. Sense elles no t'assabentaràs dels missatges del cap ni de les respostes de suport. Si ja les tens actives i tot i així no et sonen, prem «Provar avís»: t'enviem un avís de prova al moment i, si aquest mòbil no ha quedat apuntat al teu compte, et diem què has de fer.",
+    "en": "In Settings, the bell at the top shows whether notifications are on. If it's crossed out, tap “Open settings” and allow TaxiCount notifications on your phone. Without them you'll miss messages from your boss and support replies. If they're already on and you still don't hear them, tap “Test notification”: we'll send you a test one right away and, if this phone isn't linked to your account, tell you what to do."
+   },
+   "action": "push_test"
   },
   "language": {
    "cat": "extras",
