@@ -121,7 +121,7 @@ async function startVideo() {
   if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) return; // es queda el fotograma fix (poster)
   const big = window.innerWidth >= 900 && !mobile;
   // Escriptori: 15 fps, fotograma clau cada 6. Mòbil: 12 fps, clau cada 2 (Android anava a salts amb -g 12).
-  const src = big ? 'assets/video/ride-1080.mp4?v=3' : 'assets/video/ride-720.mp4?v=4';
+  const src = big ? 'assets/video/ride-1080.mp4?v=4' : 'assets/video/ride-720.mp4?v=5';
   ride.step = big ? 1 / 15 : 1 / 12;
   // El vídeo no ha de competir amb el text, les fonts i les captures: es comença a baixar després del load.
   if (document.readyState !== 'complete') await new Promise((ok) => window.addEventListener('load', ok, { once: true }));
