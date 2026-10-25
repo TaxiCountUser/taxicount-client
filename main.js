@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger);
+window.__tcReady = true; // l'script inline d'index.html treu html.js (= tot visible) si això no arriba en 4 s (CDN caigut)
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 // ?q=high / ?q=low força la qualitat (per provar el mode escriptori en finestres petites i a l'inrevés).
@@ -18,61 +19,69 @@ const N_STOPS = sections.length; // una secció per parada
 const I18N = {
   ca: {
     hero_h: 'Parla i apunta la carrera.',
-    hero_p: 'Dicta el teu servei i TaxiCount l\'apunta. L\'app dels taxistes.',
-    hero_scroll: 'Descobreix TaxiCount', top_enter: 'Entrar',
-    cta_play: 'Descarrega-la a Google Play', cta_trial: 'Prova 15 dies gratis',
+    hero_p: 'L\'app per portar els comptes del taxi: carreres, despeses, km i jornada, sense escriure.',
+    hero_scroll: 'Segueix el recorregut', top_enter: 'Entrar',
+    cta_play: 'Descarrega l\'app a Google Play',
     nav_0: 'Sortida', nav_1: 'La veu', nav_2: 'La jornada', nav_3: 'La flota', nav_4: 'El trimestre', nav_5: 'Al volant', nav_6: 'El preu', nav_7: 'Puja',
     s1_h: 'Registra una carrera parlant a TaxiCount.',
     s1_p: 'Import, pagament, origen, destí i el nom dels teus clients: ho dius en el teu idioma i queda apuntat.',
-    s2_h: 'Inicies el dia, acabes el dia. La resta ja està fet.',
-    s2_p: 'Kilòmetres, despeses, registre de jornada i el resum de cada dia, sense papers.',
+    s2_h: 'Quan plegues, el dia ja està quadrat.',
+    s2_p: 'Apuntes els km en sortir i en plegar. Al final del dia tens el que has fet, el que has gastat i el que t\'ha quedat per quilòmetre, i el registre de jornada per al control horari.',
     s3_h: 'Tots els cotxes i tots els conductors, en una pantalla.',
     s3_p: 'Vehicles, conductors, xat de flota i avisos: el titular de la flota ho veu tot des de l\'app o la web.',
-    s4_h: 'El trimestre, resolt.',
-    s4_p: 'Informes Excel i PDF per client, per conductor i per dia, a punt per la gestoria.',
+    s4_h: 'A final de trimestre, l\'informe ja és fet.',
+    s4_p: 'Excel i PDF per client, per conductor i per dia. El passes a la gestoria i llestos.',
     s5_h: 'Fet per un taxista que encara condueix.',
-    s5_p: 'Soc la quarta generació de taxistes de la meva família, per deixar enrere l\'agenda de paper he creat aquesta aplicació.',
-    s6_h: 'Pagues pels conductors que tens. Ni un més.',
-    s6_p: 'Prova-ho 15 dies gratis. Després 3 € per conductor al mes o 30 € l\'any. Amb el codi «TAXICOUNT50» et surt a 15 € l\'any.',
+    s5_p: 'Soc taxista, la quarta generació de la meva família. Vaig fer aquesta app per deixar enrere l\'agenda de paper, i la faig servir cada dia a la meva feina.',
+    s6_h: 'Pagues només pels conductors que tens.',
+    s6_p: '15 dies de prova sense pagar res. Després, 3 € al mes per conductor, o 30 € si pagues l\'any. Amb el codi TAXICOUNT50, el primer any et surt a 15 €.',
     s7_h: 'Puja al taxi.',
-    s7_p: 'Descarrega-la, dicta la primera carrera i deixa que faci els comptes.',
-    s1_k: 'Parada 1 · La veu', s2_k: 'Parada 2 · La jornada', s3_k: 'Parada 3 · La flota', s4_k: 'Parada 4 · El trimestre', s5_k: 'Parada 5 · Al volant', s6_k: 'Parada 6 · El preu',
-    s1_dictat: 'Figueres a Roses, cinquanta euros, targeta',
-    chip_origen: 'Origen', chip_desti: 'Destí', chip_import: 'Import', chip_pagament: 'Pagament', chip_targeta: 'Targeta',
-    s2_f1: 'Resum diari de despeses i beneficis', s2_f2: 'El que guanyes per cada km', s2_f3: 'Els km que has recorregut', s2_f4: 'Registre de jornada per al control horari',
-    s3_f1: 'Cada carrera amb el seu cotxe i el seu conductor', s3_f2: 'Xat entre el titular i cada conductor', s3_f3: 'Recordatoris d\'ITV, assegurança i manteniment', s3_f4: 'Revisa la comptabilitat en temps real',
-    rep_title: 'Informe trimestral', rep_client: 'per client', rep_conductor: 'per conductor', rep_dia: 'per dia',
-    meter_label: 'TARIFA', meter_per: 'per conductor al mes', meter_year: 'Anual', meter_year_short: 'l\'any', meter_trial: 'Prova', meter_trial_v: '15 dies gratis', meter_promo: 'Codi',
+    s7_p: 'Descarrega l\'app, dicta la primera carrera i deixa que faci els comptes.',
+    s1_dictat: '«Figueres a Roses, cinquanta euros, targeta.»',
+    chip_targeta: 'targeta',
+    s3_f1: 'Cada carrera amb el seu cotxe i el seu conductor', s3_f2: 'Xat entre el titular i cada conductor', s3_f3: 'Recordatoris d\'ITV, assegurança i manteniment', s3_f4: 'Els números de cada cotxe, al dia',
+    meter_label: 'TARIFA', meter_per: 'per conductor al mes', meter_year: 'A l\'any', meter_year_short: '1r any', meter_trial: 'Prova', meter_trial_v: '15 dies gratis', meter_promo: 'Codi',
+    cta_web: 'Prova-la al navegador',
+    rep_cap: 'Primera pàgina d\'un informe PDF real, amb dades de prova.',
+    rep_alt: 'Primera pàgina d\'un informe PDF de TaxiCount: carreres i despeses per conductor i el resum per mètode de pagament',
+    alt_veu: 'Pantalla de TaxiCount gravant una carrera dictada',
+    alt_jornada: 'Pantalla de TaxiCount amb el resum de la jornada',
+    alt_flota2: 'Panell del titular amb els cotxes i les carreres de la flota',
+    meter_aria: '15 dies gratis; 3 € per conductor al mes o 30 € l\'any; amb el codi TAXICOUNT50, 15 € el primer any',
     foot_privacy: 'Política de privacitat',
     title: 'TaxiCount — Parla i apunta la carrera',
   },
   es: {
     hero_h: 'Habla y apunta la carrera.',
-    hero_p: 'Dicta tu servicio y TaxiCount lo apunta. La app de los taxistas.',
-    hero_scroll: 'Descubre TaxiCount', top_enter: 'Entrar',
-    cta_play: 'Descárgala en Google Play', cta_trial: 'Prueba 15 días gratis',
+    hero_p: 'La app para llevar las cuentas del taxi: carreras, gastos, km y jornada, sin escribir.',
+    hero_scroll: 'Sigue el recorrido', top_enter: 'Entrar',
+    cta_play: 'Descarga la app en Google Play',
     nav_0: 'Salida', nav_1: 'La voz', nav_2: 'La jornada', nav_3: 'La flota', nav_4: 'El trimestre', nav_5: 'Al volante', nav_6: 'El precio', nav_7: 'Sube',
     s1_h: 'Registra una carrera hablando a TaxiCount.',
     s1_p: 'Importe, pago, origen, destino y el nombre de tus clientes: lo dices en tu idioma y queda apuntado.',
-    s2_h: 'Empiezas el día, acabas el día. El resto ya está hecho.',
-    s2_p: 'Kilómetros, gastos, registro de jornada y el resumen de cada día, sin papeles.',
+    s2_h: 'Cuando plegas, el día ya está cuadrado.',
+    s2_p: 'Apuntas los km al salir y al plegar. Al final del día tienes lo que has hecho, lo que has gastado y lo que te ha quedado por kilómetro, y el registro de jornada para el control horario.',
     s3_h: 'Todos los coches y todos los conductores, en una pantalla.',
     s3_p: 'Vehículos, conductores, chat de flota y avisos: el titular de la flota lo ve todo desde la app o la web.',
-    s4_h: 'El trimestre, resuelto.',
-    s4_p: 'Informes Excel y PDF por cliente, por conductor y por día, listos para la gestoría.',
+    s4_h: 'A final de trimestre, el informe ya está hecho.',
+    s4_p: 'Excel y PDF por cliente, por conductor y por día. Se lo pasas a la gestoría y listo.',
     s5_h: 'Hecha por un taxista que sigue conduciendo.',
-    s5_p: 'Soy la cuarta generación de taxistas de mi familia, para dejar atrás la agenda de papel he creado esta aplicación.',
-    s6_h: 'Pagas por los conductores que tienes. Ni uno más.',
-    s6_p: 'Pruébalo 15 días gratis. Después 3 € por conductor al mes o 30 € al año. Con el código «TAXICOUNT50» te sale a 15 € al año.',
+    s5_p: 'Soy taxista, la cuarta generación de mi familia. Hice esta app para dejar atrás la agenda de papel, y la uso cada día en mi trabajo.',
+    s6_h: 'Pagas solo por los conductores que tienes.',
+    s6_p: '15 días de prueba sin pagar nada. Después, 3 € al mes por conductor, o 30 € si pagas el año. Con el código TAXICOUNT50, el primer año te sale a 15 €.',
     s7_h: 'Sube al taxi.',
-    s7_p: 'Descárgala, dicta la primera carrera y deja que haga las cuentas.',
-    s1_k: 'Parada 1 · La voz', s2_k: 'Parada 2 · La jornada', s3_k: 'Parada 3 · La flota', s4_k: 'Parada 4 · El trimestre', s5_k: 'Parada 5 · Al volante', s6_k: 'Parada 6 · El precio',
-    s1_dictat: 'Figueres a Roses, cincuenta euros, tarjeta',
-    chip_origen: 'Origen', chip_desti: 'Destino', chip_import: 'Importe', chip_pagament: 'Pago', chip_targeta: 'Tarjeta',
-    s2_f1: 'Resumen diario de gastos y beneficios', s2_f2: 'Lo que ganas por cada km', s2_f3: 'Los km que has recorrido', s2_f4: 'Registro de jornada para el control horario',
-    s3_f1: 'Cada carrera con su coche y su conductor', s3_f2: 'Chat entre el titular y cada conductor', s3_f3: 'Recordatorios de ITV, seguro y mantenimiento', s3_f4: 'Revisa la contabilidad en tiempo real',
-    rep_title: 'Informe trimestral', rep_client: 'por cliente', rep_conductor: 'por conductor', rep_dia: 'por día',
-    meter_label: 'TARIFA', meter_per: 'por conductor al mes', meter_year: 'Anual', meter_year_short: 'al año', meter_trial: 'Prueba', meter_trial_v: '15 días gratis', meter_promo: 'Código',
+    s7_p: 'Descarga la app, dicta la primera carrera y deja que haga las cuentas.',
+    s1_dictat: '«Figueres a Roses, cincuenta euros, tarjeta.»',
+    chip_targeta: 'tarjeta',
+    s3_f1: 'Cada carrera con su coche y su conductor', s3_f2: 'Chat entre el titular y cada conductor', s3_f3: 'Recordatorios de ITV, seguro y mantenimiento', s3_f4: 'Los números de cada coche, al día',
+    meter_label: 'TARIFA', meter_per: 'por conductor al mes', meter_year: 'Al año', meter_year_short: '1er año', meter_trial: 'Prueba', meter_trial_v: '15 días gratis', meter_promo: 'Código',
+    cta_web: 'Pruébala en el navegador',
+    rep_cap: 'Primera página de un informe PDF real, con datos de prueba.',
+    rep_alt: 'Primera página de un informe PDF de TaxiCount: carreras y gastos por conductor y el resumen por método de pago',
+    alt_veu: 'Pantalla de TaxiCount grabando una carrera dictada',
+    alt_jornada: 'Pantalla de TaxiCount con el resumen de la jornada',
+    alt_flota2: 'Panel del titular con los coches y las carreras de la flota',
+    meter_aria: '15 días gratis; 3 € por conductor al mes o 30 € al año; con el código TAXICOUNT50, 15 € el primer año',
     foot_privacy: 'Política de privacidad',
     title: 'TaxiCount — Habla y apunta la carrera',
   },
@@ -80,7 +89,8 @@ const I18N = {
 function setLang(lang) {
   const d = I18N[lang] || I18N.ca;
   document.querySelectorAll('[data-i18n]').forEach((el) => { const k = el.dataset.i18n; if (d[k]) el.textContent = d[k]; });
-  document.querySelectorAll('[data-type]').forEach((el) => { const k = el.dataset.type; if (d[k]) { el.dataset.full = d[k]; if (el.closest('.stop')?.classList.contains('typed-done')) el.textContent = d[k]; else el.textContent = ''; } });
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => { const k = el.dataset.i18nAlt; if (d[k]) el.alt = d[k]; });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => { const k = el.dataset.i18nAria; if (d[k]) el.setAttribute('aria-label', d[k]); });
   document.documentElement.lang = lang; document.title = d.title;
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   try { localStorage.setItem('tc_lang', lang); } catch {}
@@ -181,21 +191,8 @@ if (reduced) {
 function enterStop(s) {
   if (s.classList.contains('is-in')) return;
   s.classList.add('is-in');
-  const typed = s.querySelector('.typed');
-  if (typed) typewrite(s, typed);
   const amount = s.querySelector('.meter-drop');
   if (amount) meterDrop(s, amount);
-}
-function typewrite(s, el) {
-  const full = el.dataset.full || el.textContent; el.textContent = '';
-  if (reduced) { el.textContent = full; s.classList.add('typed-done'); return; }
-  let i = 0;
-  const tick = () => {
-    i++; el.textContent = full.slice(0, i);
-    if (i < full.length) setTimeout(tick, full[i - 1] === ',' ? 260 : 38 + Math.random() * 40);
-    else setTimeout(() => s.classList.add('typed-done'), 350);
-  };
-  setTimeout(tick, 500);
 }
 function meterDrop(s, el) {
   const from = parseFloat(el.dataset.from.replace(',', '.')), to = parseFloat(el.dataset.to.replace(',', '.'));
@@ -207,7 +204,7 @@ function meterDrop(s, el) {
     .to(obj, { v: to, duration: 1.4, ease: 'steps(30)', onUpdate: () => { el.textContent = fmt(obj.v); } })
     .fromTo(el, { textShadow: '0 0 30px rgba(255,193,7,.95)' }, { textShadow: '0 0 18px rgba(255,193,7,.45)', duration: .8 }, '<+0.9');
 }
-if (reduced) sections.forEach((s) => { if (s.classList.contains('is-in')) { const t = s.querySelector('.typed'); if (t) typewrite(s, t); const a = s.querySelector('.meter-drop'); if (a) meterDrop(s, a); } });
+if (reduced) sections.forEach((s) => { if (s.classList.contains('is-in')) { const a = s.querySelector('.meter-drop'); if (a) meterDrop(s, a); } });
 
 // Navegació pel recorregut i enllaços interns amb scroll suau
 document.querySelectorAll('a[href^="#"]').forEach((a) => {

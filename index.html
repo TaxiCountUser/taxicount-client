@@ -12,6 +12,7 @@
 <link rel="preload" href="assets/fonts/atkinson-latin-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="landing.css">
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.__tcReady)document.documentElement.classList.remove('js')},4000)</script>
 <script type="importmap">
 {
   "imports": {
@@ -45,11 +46,11 @@
 <nav class="route" aria-label="Recorregut">
   <ol>
     <li><a href="#inici" data-stop="0"><span data-i18n="nav_0">Sortida</span></a></li>
-    <li><a href="#veu" data-stop="1"><span data-i18n="nav_1">La veu</span></a></li>
-    <li><a href="#jornada" data-stop="2"><span data-i18n="nav_2">La jornada</span></a></li>
-    <li><a href="#flota" data-stop="3"><span data-i18n="nav_3">La flota</span></a></li>
-    <li><a href="#trimestre" data-stop="4"><span data-i18n="nav_4">El trimestre</span></a></li>
-    <li><a href="#volant" data-stop="5"><span data-i18n="nav_5">Al volant</span></a></li>
+    <li><a href="#volant" data-stop="1"><span data-i18n="nav_5">Al volant</span></a></li>
+    <li><a href="#veu" data-stop="2"><span data-i18n="nav_1">La veu</span></a></li>
+    <li><a href="#jornada" data-stop="3"><span data-i18n="nav_2">La jornada</span></a></li>
+    <li><a href="#flota" data-stop="4"><span data-i18n="nav_3">La flota</span></a></li>
+    <li><a href="#trimestre" data-stop="5"><span data-i18n="nav_4">El trimestre</span></a></li>
     <li><a href="#preu" data-stop="6"><span data-i18n="nav_6">El preu</span></a></li>
     <li><a href="#puja" data-stop="7"><span data-i18n="nav_7">Puja</span></a></li>
   </ol>
@@ -62,48 +63,42 @@
       <h1 data-i18n="hero_h">Parla i apunta la carrera.</h1>
       <p class="lead" data-i18n="hero_p">Dicta el teu servei i TaxiCount l'apunta. L'app dels taxistes.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_play">Descarrega-la a Google Play</a>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_play">Descarrega l'app a Google Play</a>
+        <a class="btn btn-ghost" href="https://www.taxicount.com/app/" data-i18n="cta_web">Prova-la al navegador</a>
       </div>
     </div>
-    <a class="scroll-hint" href="#veu"><span data-i18n="hero_scroll">Descobreix TaxiCount</span><i aria-hidden="true"></i></a>
+    <a class="scroll-hint" href="#volant"><span data-i18n="hero_scroll">Segueix el recorregut</span><i aria-hidden="true"></i></a>
   </section>
 
-  <section class="stop with-phone" id="veu" data-stop="1">
+  <section class="stop founder" id="volant" data-stop="1">
     <div class="copy">
-      <p class="kicker" data-i18n="s1_k">Parada 1 · La veu</p>
+      <h2 data-i18n="s5_h">Fet per un taxista que encara condueix.</h2>
+      <p data-i18n="s5_p">Soc la quarta generació de taxistes de la meva família, per deixar enrere l'agenda de paper he creat aquesta aplicació.</p>
+    </div>
+  </section>
+
+  <section class="stop with-phone" id="veu" data-stop="2">
+    <div class="copy">
       <h2 data-i18n="s1_h">Registra una carrera parlant a TaxiCount.</h2>
       <p data-i18n="s1_p">Import, pagament, origen, destí i el nom dels teus clients: ho dius en el teu idioma i queda apuntat.</p>
-      <div class="dictat" aria-live="polite">
-        <div class="dictat-line"><span class="mic" aria-hidden="true"></span><span class="typed" data-type="s1_dictat">Figueres a Roses, cinquanta euros, targeta</span></div>
-        <ul class="chips">
-          <li><small data-i18n="chip_origen">Origen</small>Figueres</li>
-          <li><small data-i18n="chip_desti">Destí</small>Roses</li>
-          <li><small data-i18n="chip_import">Import</small>50,00 €</li>
-          <li><small data-i18n="chip_pagament">Pagament</small><span data-i18n="chip_targeta">Targeta</span></li>
-        </ul>
-      </div>
+      <figure class="said">
+        <blockquote data-i18n="s1_dictat">«Figueres a Roses, cinquanta euros, targeta.»</blockquote>
+        <figcaption class="ticket"><span>Figueres → Roses</span><b>50,00 €</b><span data-i18n="chip_targeta">targeta</span></figcaption>
+      </figure>
     </div>
-    <figure class="phone"><img src="assets/shots/veu-760.jpg" srcset="assets/shots/veu-300.jpg 300w, assets/shots/veu-380.jpg 380w, assets/shots/veu-560.jpg 560w, assets/shots/veu-760.jpg 760w, assets/shots/veu-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="" loading="lazy" width="760" height="1689"></figure>
+    <figure class="phone"><img src="assets/shots/veu-760.jpg" srcset="assets/shots/veu-300.jpg 300w, assets/shots/veu-380.jpg 380w, assets/shots/veu-560.jpg 560w, assets/shots/veu-760.jpg 760w, assets/shots/veu-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="Pantalla de TaxiCount gravant una carrera dictada" data-i18n-alt="alt_veu" loading="lazy" width="760" height="1689"></figure>
   </section>
 
-  <section class="stop with-phone" id="jornada" data-stop="2">
+  <section class="stop with-phone" id="jornada" data-stop="3">
     <div class="copy">
-      <p class="kicker" data-i18n="s2_k">Parada 2 · La jornada</p>
       <h2 data-i18n="s2_h">Inicies el dia, acabes el dia. La resta ja està fet.</h2>
       <p data-i18n="s2_p">Kilòmetres, despeses, registre de jornada i el resum de cada dia, sense papers.</p>
-      <ul class="facts">
-        <li data-i18n="s2_f1">Resum diari de despeses i beneficis</li>
-        <li data-i18n="s2_f2">El que guanyes per cada km</li>
-        <li data-i18n="s2_f3">Els km que has recorregut</li>
-        <li data-i18n="s2_f4">Registre de jornada per al control horari</li>
-      </ul>
     </div>
-    <figure class="phone"><img src="assets/shots/jornada-760.jpg" srcset="assets/shots/jornada-300.jpg 300w, assets/shots/jornada-380.jpg 380w, assets/shots/jornada-560.jpg 560w, assets/shots/jornada-760.jpg 760w, assets/shots/jornada-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="" loading="lazy" width="760" height="1689"></figure>
+    <figure class="phone"><img src="assets/shots/jornada-760.jpg" srcset="assets/shots/jornada-300.jpg 300w, assets/shots/jornada-380.jpg 380w, assets/shots/jornada-560.jpg 560w, assets/shots/jornada-760.jpg 760w, assets/shots/jornada-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="Pantalla de TaxiCount amb el resum de la jornada" data-i18n-alt="alt_jornada" loading="lazy" width="760" height="1689"></figure>
   </section>
 
-  <section class="stop with-phone" id="flota" data-stop="3">
+  <section class="stop with-phone" id="flota" data-stop="4">
     <div class="copy">
-      <p class="kicker" data-i18n="s3_k">Parada 3 · La flota</p>
       <h2 data-i18n="s3_h">Tots els cotxes i tots els conductors, en una pantalla.</h2>
       <p data-i18n="s3_p">Vehicles, conductors, xat de flota i avisos: el titular de la flota ho veu tot des de l'app o la web.</p>
       <ul class="facts">
@@ -113,53 +108,33 @@
         <li data-i18n="s3_f4">Revisa la comptabilitat en temps real</li>
       </ul>
     </div>
-    <figure class="phone"><img src="assets/shots/flota2-760.jpg" srcset="assets/shots/flota2-300.jpg 300w, assets/shots/flota2-380.jpg 380w, assets/shots/flota2-560.jpg 560w, assets/shots/flota2-760.jpg 760w, assets/shots/flota2-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="" loading="lazy" width="760" height="1689"></figure>
+    <figure class="phone"><img src="assets/shots/flota2-760.jpg" srcset="assets/shots/flota2-300.jpg 300w, assets/shots/flota2-380.jpg 380w, assets/shots/flota2-560.jpg 560w, assets/shots/flota2-760.jpg 760w, assets/shots/flota2-1140.jpg 1140w" sizes="(max-width: 760px) 78vw, min(27vw, 33vh)" alt="Panell del titular amb els cotxes i les carreres de la flota" data-i18n-alt="alt_flota2" loading="lazy" width="760" height="1689"></figure>
   </section>
 
-  <section class="stop with-report" id="trimestre" data-stop="4">
+  <section class="stop with-report" id="trimestre" data-stop="5">
     <div class="copy">
-      <p class="kicker" data-i18n="s4_k">Parada 4 · El trimestre</p>
       <h2 data-i18n="s4_h">El trimestre, resolt.</h2>
       <p data-i18n="s4_p">Informes Excel i PDF per client, per conductor i per dia, a punt per la gestoria.</p>
     </div>
-    <div class="report" aria-hidden="true">
-      <div class="report-head"><span class="tag xls">XLSX</span><span class="tag pdf">PDF</span><span class="report-title" data-i18n="rep_title">Informe trimestral</span></div>
-      <div class="report-rows">
-        <div><i style="--w:62%"></i><b style="--w:18%"></b></div>
-        <div><i style="--w:48%"></i><b style="--w:22%"></b></div>
-        <div><i style="--w:70%"></i><b style="--w:16%"></b></div>
-        <div><i style="--w:55%"></i><b style="--w:20%"></b></div>
-        <div><i style="--w:41%"></i><b style="--w:24%"></b></div>
-        <div class="total"><i style="--w:30%"></i><b style="--w:26%"></b></div>
-      </div>
-      <ul class="report-by">
-        <li data-i18n="rep_client">per client</li><li data-i18n="rep_conductor">per conductor</li><li data-i18n="rep_dia">per dia</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="stop quiet" id="volant" data-stop="5">
-    <div class="copy">
-      <p class="kicker" data-i18n="s5_k">Parada 5 · Al volant</p>
-      <h2 data-i18n="s5_h">Fet per un taxista que encara condueix.</h2>
-      <p data-i18n="s5_p">Soc la quarta generació de taxistes de la meva família, per deixar enrere l'agenda de paper he creat aquesta aplicació.</p>
-    </div>
+    <figure class="paper">
+      <img src="assets/shots/informe-840.jpg" srcset="assets/shots/informe-560.jpg 560w, assets/shots/informe-840.jpg 840w, assets/shots/informe-1240.jpg 1240w" sizes="(max-width: 760px) 92vw, min(52vw, 720px)" alt="Primera pàgina d'un informe PDF de TaxiCount: carreres i despeses per conductor i el resum per mètode de pagament" data-i18n-alt="rep_alt" loading="lazy" width="840" height="531">
+      <figcaption data-i18n="rep_cap">Primera pàgina d'un informe PDF real, amb dades de prova.</figcaption>
+    </figure>
   </section>
 
   <section class="stop with-meter" id="preu" data-stop="6">
     <div class="copy">
-      <p class="kicker" data-i18n="s6_k">Parada 6 · El preu</p>
       <h2 data-i18n="s6_h">Pagues pels conductors que tens. Ni un més.</h2>
-      <p data-i18n="s6_p">Prova-ho 15 dies gratis. Després 3 € per conductor al mes o 30 € l'any. Amb el codi «TAXICOUNT50» et surt a 15 € l'any.</p>
+      <p data-i18n="s6_p">Prova-ho 15 dies gratis. Després 3 € per conductor al mes o 30 € l'any. Amb el codi «TAXICOUNT50» et surt a 15 € l'any.</p>
     </div>
-    <div class="meter" role="img" aria-label="15 dies gratis; 3 € per conductor al mes o 30 € l'any; amb el codi TAXICOUNT50, 15 € l'any">
+    <div class="meter" role="img" aria-label="15 dies gratis; 3 € per conductor al mes o 30 € l'any; amb el codi TAXICOUNT50, 15 € el primer any" data-i18n-aria="meter_aria">
       <div class="meter-top"><span data-i18n="meter_label">TARIFA</span><span class="meter-led" aria-hidden="true"></span></div>
       <div class="meter-digits"><span class="meter-amount">3,00</span><span class="meter-unit">€</span></div>
       <div class="meter-sub"><span data-i18n="meter_per">per conductor al mes</span></div>
       <div class="meter-rows">
         <div><span data-i18n="meter_trial">Prova</span><strong data-i18n="meter_trial_v">15 dies gratis</strong></div>
-        <div><span data-i18n="meter_year">Anual</span><strong>30 €</strong></div>
-        <div class="promo"><span><span data-i18n="meter_promo">Codi</span> <code>TAXICOUNT50</code></span><strong><span class="meter-drop" data-from="30" data-to="15">30</span> € <span data-i18n="meter_year_short">l'any</span></strong></div>
+        <div><span data-i18n="meter_year">Anual</span><strong>30 €</strong></div>
+        <div class="promo"><span><span data-i18n="meter_promo">Codi</span> <code>TAXICOUNT50</code></span><strong><span class="meter-drop" data-from="30" data-to="15">30</span> € <span data-i18n="meter_year_short">1r any</span></strong></div>
       </div>
     </div>
   </section>
@@ -169,7 +144,8 @@
       <h2 data-i18n="s7_h">Puja al taxi.</h2>
       <p data-i18n="s7_p">Descarrega-la, dicta la primera carrera i deixa que faci els comptes.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_trial">Prova 15 dies gratis</a>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=app.taxicount" data-i18n="cta_play">Descarrega l'app a Google Play</a>
+        <a class="btn btn-ghost" href="https://www.taxicount.com/app/" data-i18n="cta_web">Prova-la al navegador</a>
       </div>
       <footer>
         <a href="mailto:soporte@taxicount.com">soporte@taxicount.com</a>
