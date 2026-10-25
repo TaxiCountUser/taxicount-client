@@ -91,7 +91,12 @@ function setLang(lang) {
   document.querySelectorAll('[data-i18n]').forEach((el) => { const k = el.dataset.i18n; if (d[k]) el.textContent = d[k]; });
   // Captures de l'app en el mateix idioma que la web (maquetes de assets/shots/mock/, ?lang=es).
   const sl = lang === 'es' ? 'es' : 'ca';
-  document.querySelectorAll('img[data-shot]').forEach((im) => { const b = `assets/shots/${im.dataset.shot}-${sl}-`; if (im.src.includes(b)) return; im.srcset = [300, 380, 560, 760, 1140].map((w) => `${b}${w}.jpg ${w}w`).join(', '); im.src = `${b}760.jpg`; });
+  // L'informe PDF de mostra també (generat amb buildPdf en aquell idioma): data-widths/data-w en lloc de les mides del mòbil.
+  document.querySelectorAll('img[data-shot]').forEach((im) => {
+    const b = `assets/shots/${im.dataset.shot}-${sl}-`; if (im.src.includes(b)) return;
+    const ws = (im.dataset.widths || '300,380,560,760,1140').split(',');
+    im.srcset = ws.map((w) => `${b}${w}.jpg ${w}w`).join(', '); im.src = `${b}${im.dataset.w || 760}.jpg`;
+  });
   document.querySelectorAll('[data-i18n-alt]').forEach((el) => { const k = el.dataset.i18nAlt; if (d[k]) el.alt = d[k]; });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { const k = el.dataset.i18nAria; if (d[k]) el.setAttribute('aria-label', d[k]); });
   document.documentElement.lang = lang; document.title = d.title;
