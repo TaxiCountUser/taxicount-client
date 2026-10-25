@@ -101,22 +101,23 @@ setLang(lang);
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
 
 // ---------- Fons: vídeo real controlat per l'scroll ----------
-// El vídeo (vista del conductor) avança amb l'scroll: p ∈ [0,1] → currentTime. Es carrega sencer com a
-// blob perquè el «seek» sigui instantani i funcioni a iOS; el fitxer està codificat amb un fotograma
-// clau cada 12 (ffmpeg -g 12) perquè cada salt sigui barat. En canviar el vídeo, puja el ?v= (el navegador el guarda amb el mateix nom).
-const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0, step: 1 / 30 };
+// El vídeo (vista del conductor, gravat pel fundador a Girona) avança amb l'scroll: p ∈ [0,1] → currentTime.
+// Com que no es reprodueix sinó que es «recorre», n'hi ha prou amb 15/12 fps (meitat de pes, mateixa nitidesa).
+// Escriptori (1920, ~31 MB): es serveix per trossos (Range) en lloc de baixar-lo sencer. Mòbil (720, ~10 MB): sencer
+// com a blob, perquè el seek sigui instantani i funcioni a iOS. En canviar el vídeo, puja el ?v= (mateix nom = memòria cau).
+const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0, step: 1 / 15 };
 async function startVideo() {
   const v = ride.video;
   if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) return; // es queda el fotograma fix (poster)
   const big = window.innerWidth >= 900 && !mobile;
-  // Mòbil: 15 fps i TOT fotogrames clau (-g 1) perquè cada seek descodifiqui 1 sol fotograma (Android anava a salts).
-  const src = big ? 'assets/video/ride-1080.mp4?v=2' : 'assets/video/ride-720.mp4?v=3';
-  ride.step = big ? 1 / 30 : 1 / 15;
-  // El vídeo (5–10 MB) no ha de competir amb el text, les fonts i les captures: es baixa després del load.
+  // Escriptori: 15 fps, fotograma clau cada 6. Mòbil: 12 fps, clau cada 2 (Android anava a salts amb -g 12).
+  const src = big ? 'assets/video/ride-1080.mp4?v=3' : 'assets/video/ride-720.mp4?v=4';
+  ride.step = big ? 1 / 15 : 1 / 12;
+  // El vídeo no ha de competir amb el text, les fonts i les captures: es comença a baixar després del load.
   if (document.readyState !== 'complete') await new Promise((ok) => window.addEventListener('load', ok, { once: true }));
   try {
-    const res = await fetch(src, { priority: 'low' }); if (!res.ok) throw new Error(res.status);
-    v.src = URL.createObjectURL(await res.blob());
+    if (big) v.src = src;
+    else { const res = await fetch(src, { priority: 'low' }); if (!res.ok) throw new Error(res.status); v.src = URL.createObjectURL(await res.blob()); }
     await new Promise((ok, ko) => { v.addEventListener('loadedmetadata', ok, { once: true }); v.addEventListener('error', ko, { once: true }); v.load(); });
     ride.duration = v.duration; ride.ready = true;
     v.pause(); v.currentTime = 0;
