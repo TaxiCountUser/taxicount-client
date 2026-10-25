@@ -105,7 +105,9 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 // Com que no es reprodueix sinó que es «recorre», n'hi ha prou amb 15/12 fps (meitat de pes, mateixa nitidesa).
 // Escriptori (1920, ~31 MB): es serveix per trossos (Range) en lloc de baixar-lo sencer. Mòbil (720, ~10 MB): sencer
 // com a blob, perquè el seek sigui instantani i funcioni a iOS. En canviar el vídeo, puja el ?v= (mateix nom = memòria cau).
-const ride = { video: document.getElementById('ride-video'), ready: false, target: 0, duration: 0, step: 1 / 15 };
+const ride = { video: document.getElementById('ride-video'), ready: false, p: 0, target: 0, duration: 0, step: 1 / 15 };
+// Temps del vídeo per a un progrés p. Màxim = l'últim fotograma (no la durada: un seek al final pot fer «ended» i encallar-se).
+const rideTime = (p) => (reduced ? 0 : Math.max(0, Math.min(ride.duration - ride.step, p * ride.duration)));
 async function startVideo() {
   const v = ride.video;
   if (!v || !v.canPlayType || !v.canPlayType('video/mp4')) return; // es queda el fotograma fix (poster)
@@ -120,7 +122,15 @@ async function startVideo() {
     else { const res = await fetch(src, { priority: 'low' }); if (!res.ok) throw new Error(res.status); v.src = URL.createObjectURL(await res.blob()); }
     await new Promise((ok, ko) => { v.addEventListener('loadedmetadata', ok, { once: true }); v.addEventListener('error', ko, { once: true }); v.load(); });
     ride.duration = v.duration; ride.ready = true;
-    v.pause(); v.currentTime = 0;
+    // On és ARA l'usuari: si ha baixat fins al final abans que el vídeo carregués, ja no hi ha més scroll que l'actualitzi.
+    ride.target = rideTime(ride.p);
+    v.pause();
+    v.addEventListener('seeked', () => { seeking = false; });
+    // Descodificador perdut (Android l'allibera amb poca memòria o en tornar d'una altra app): es torna a carregar el mateix fitxer.
+    let retries = 0;
+    v.addEventListener('error', () => { if (retries++ > 2) return; seeking = false; const s = v.src; v.removeAttribute('src'); v.load(); v.src = s; v.load(); });
+    const wake = () => { seeking = false; };
+    document.addEventListener('visibilitychange', wake); window.addEventListener('pageshow', wake);
     rideLoop();
     console.info('[landing] vídeo del recorregut llest', src, ride.duration.toFixed(1) + ' s');
   } catch (e) {
@@ -128,15 +138,17 @@ async function startVideo() {
     console.warn('[landing] vídeo no disponible: fotograma fix', e);
   }
 }
-let seeking = false;
-function rideLoop() {
+// Un sol seek alhora (el següent espera el 'seeked'), però amb temps límit: si el 'seeked' no arriba mai (Android adorm
+// el vídeo aturat, iOS a l'últim fotograma, xarxa encallada a escriptori), abans el vídeo es quedava clavat per sempre.
+let seeking = false, seekAt = 0;
+const SEEK_TIMEOUT = 700;
+function rideLoop(now = performance.now()) {
   const v = ride.video;
+  if (seeking && now - seekAt > SEEK_TIMEOUT) seeking = false;
   // Seek al fotograma sencer més proper: res de seeks entre dos fotogrames (no canvien la imatge i saturen el descodificador).
   const t = Math.round(ride.target / ride.step) * ride.step;
   if (!seeking && Math.abs(v.currentTime - t) > ride.step / 2) {
-    seeking = true;
-    const done = () => { seeking = false; };
-    v.addEventListener('seeked', done, { once: true });
+    seeking = true; seekAt = now;
     v.currentTime = t;
   }
   requestAnimationFrame(rideLoop);
@@ -154,7 +166,8 @@ if (!reduced) {
 }
 
 function setProgress(p) {
-  if (ride.ready) ride.target = reduced ? 0 : Math.min(ride.duration - 0.05, p * ride.duration);
+  ride.p = p; // es guarda sempre, també abans que el vídeo estigui llest
+  if (ride.ready) ride.target = rideTime(p);
   routeFill.style.height = `${(p * 100).toFixed(2)}%`;
   const stop = Math.min(N_STOPS - 1, Math.floor(p * N_STOPS + 0.0001));
   navItems.forEach((li, i) => { li.classList.toggle('is-active', i === stop); li.classList.toggle('is-done', i < stop); });
