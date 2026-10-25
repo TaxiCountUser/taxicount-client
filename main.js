@@ -101,7 +101,7 @@ setLang(lang);
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
 
 // ---------- Fons: vídeo real controlat per l'scroll ----------
-// El vídeo (vista del conductor, gravat pel fundador a Girona) avança amb l'scroll: p ∈ [0,1] → currentTime.
+// El vídeo (vista del conductor, gravat pel fundador a Figueres) avança amb l'scroll: p ∈ [0,1] → currentTime.
 // Com que no es reprodueix sinó que es «recorre», n'hi ha prou amb 15/12 fps (meitat de pes, mateixa nitidesa).
 // Escriptori (1920, ~31 MB): es serveix per trossos (Range) en lloc de baixar-lo sencer. Mòbil (720, ~10 MB): sencer
 // com a blob, perquè el seek sigui instantani i funcioni a iOS. En canviar el vídeo, puja el ?v= (mateix nom = memòria cau).
