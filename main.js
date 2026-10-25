@@ -46,7 +46,7 @@ const I18N = {
     rep_alt: 'Primera pàgina d\'un informe PDF de TaxiCount: carreres i despeses per conductor i el resum per mètode de pagament',
     alt_veu: 'Pantalla de TaxiCount gravant una carrera dictada',
     alt_jornada: 'Pantalla de TaxiCount amb el resum de la jornada',
-    alt_flota2: 'Panell del titular amb els cotxes i les carreres de la flota',
+    alt_flota: 'Panell del titular amb els cotxes i les carreres de la flota',
     meter_aria: '15 dies gratis; 3 € per conductor al mes o 30 € l\'any; amb el codi TAXICOUNT50, 15 € el primer any',
     foot_privacy: 'Política de privacitat',
     title: 'TaxiCount — Parla i apunta la carrera',
@@ -80,7 +80,7 @@ const I18N = {
     rep_alt: 'Primera página de un informe PDF de TaxiCount: carreras y gastos por conductor y el resumen por método de pago',
     alt_veu: 'Pantalla de TaxiCount grabando una carrera dictada',
     alt_jornada: 'Pantalla de TaxiCount con el resumen de la jornada',
-    alt_flota2: 'Panel del titular con los coches y las carreras de la flota',
+    alt_flota: 'Panel del titular con los coches y las carreras de la flota',
     meter_aria: '15 días gratis; 3 € por conductor al mes o 30 € al año; con el código TAXICOUNT50, 15 € el primer año',
     foot_privacy: 'Política de privacidad',
     title: 'TaxiCount — Habla y apunta la carrera',
@@ -89,6 +89,9 @@ const I18N = {
 function setLang(lang) {
   const d = I18N[lang] || I18N.ca;
   document.querySelectorAll('[data-i18n]').forEach((el) => { const k = el.dataset.i18n; if (d[k]) el.textContent = d[k]; });
+  // Captures de l'app en el mateix idioma que la web (maquetes de assets/shots/mock/, ?lang=es).
+  const sl = lang === 'es' ? 'es' : 'ca';
+  document.querySelectorAll('img[data-shot]').forEach((im) => { const b = `assets/shots/${im.dataset.shot}-${sl}-`; if (im.src.includes(b)) return; im.srcset = [300, 380, 560, 760, 1140].map((w) => `${b}${w}.jpg ${w}w`).join(', '); im.src = `${b}760.jpg`; });
   document.querySelectorAll('[data-i18n-alt]').forEach((el) => { const k = el.dataset.i18nAlt; if (d[k]) el.alt = d[k]; });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { const k = el.dataset.i18nAria; if (d[k]) el.setAttribute('aria-label', d[k]); });
   document.documentElement.lang = lang; document.title = d.title;
