@@ -26,7 +26,7 @@
   .box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
   .bars { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; display: flex; gap: 4px; z-index: 5; }
   .bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(31,27,22,.15); overflow: hidden; }
-  .bar i { display: block; height: 100%; width: 0; background: var(--ink); }
+  .bar i { display: block; height: 100%; width: 0; background: var(--ink); transition: width .25s; }
   .top { position: absolute; top: calc(max(10px, env(safe-area-inset-top)) + 14px); right: 10px; z-index: 6; display: flex; gap: 6px; }
   .lang { border: 1.5px solid var(--ink); background: rgba(255,255,255,.9); color: var(--ink); font: 700 13px Arial; border-radius: 16px; padding: 5px 10px; cursor: pointer; }
   .lang[aria-pressed="true"] { background: var(--ink); color: #fff; }
@@ -57,7 +57,7 @@
 <script>
 (() => {
   // [fitxer, segons, text alternatiu]  — mateix ordre que el vídeo
-  const N = 11, OFFER = 10, DUR = [4, 5, 7, 7, 7, 7, 7, 7, 7, 11, 6];
+  const N = 11, OFFER = 10; // NO avança sola: només en tocar o lliscar
   const TXT = {
     ca: { hint: 'Toca per avançar · llisca per tornar', again: 'Torna a començar', prev: 'Anterior', next: 'Següent',
       alt: ['TaxiCount. De taxistes, per a taxistes.', 'El teu taxi, sense papers.', 'Apunta la cursa parlant.', 'Totes les curses i despeses, al dia.', 'La jornada, registrada segons la llei.', 'Tota la flota en una pantalla.', 'Cotxes i conductors, sota control: km, ITV i assegurança.', "Agenda de serveis amb notificació d'avís.", "L'informe, ja fet: Excel i PDF.", "Gratis fins al 31 de desembre, només per a l'Associació de Taxis Figueres / Vilafant. Després, cupó TAXICOUNT50: 15 € el primer any per conductor.", 'TaxiCount. www.taxicount.com'] },
@@ -79,27 +79,16 @@
   const cache = {};
   const preload = () => { for (let i = 0; i < N; i++) { const k = src(i); if (!cache[k]) { cache[k] = new Image(); cache[k].src = k; } } };
 
-  let cur = 0, start = 0, elapsed = 0, paused = false, raf = 0;
+  let cur = 0;
   function show(i) {
     cur = Math.max(0, Math.min(N - 1, i));
     img.src = src(cur);
     img.alt = TXT[lang].alt[cur];
     play.style.display = cur === OFFER - 1 ? 'block' : 'none';
     again.style.display = cur === N - 1 ? 'block' : 'none';
-    fills.forEach((f, k) => { f.style.width = k < cur ? '100%' : '0'; });
-    elapsed = 0; start = performance.now();
+    fills.forEach((f, k) => { f.style.width = k <= cur ? '100%' : '0'; });
+    hint.style.opacity = cur === 0 ? '1' : '0';
   }
-  function tick(now) {
-    if (!paused) {
-      const t = elapsed + (now - start);
-      const d = DUR[cur] * 1000;
-      fills[cur].style.width = Math.min(100, (t / d) * 100) + '%';
-      if (t >= d && cur < N - 1) show(cur + 1);
-    }
-    raf = requestAnimationFrame(tick);
-  }
-  function pause() { if (!paused) { elapsed += performance.now() - start; paused = true; } }
-  function resume() { if (paused) { start = performance.now(); paused = false; } }
   function setLang(l) {
     lang = l;
     try { localStorage.setItem('tc_lang', l); } catch (e) {}
@@ -110,7 +99,7 @@
     preload(); img.src = src(cur); img.alt = TXT[l].alt[cur];
   }
 
-  let skip = false; // un lliscament o una pausa llarga no compten com a toc
+  let skip = false; // un lliscament no compta com a toc
   $('next').addEventListener('click', () => { if (skip) { skip = false; return; } show(cur + 1); });
   $('prev').addEventListener('click', () => { if (skip) { skip = false; return; } show(cur - 1); });
   again.addEventListener('click', () => show(0));
@@ -119,21 +108,18 @@
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(cur + 1); }
     if (e.key === 'ArrowLeft') show(cur - 1);
   });
-  // Mantenir premut = pausa; lliscar = canviar de pantalla
-  let x0 = null, t0 = 0;
+  // Lliscar = canviar de pantalla
+  let x0 = null;
   const stage = $('stage');
-  stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; t0 = performance.now(); pause(); });
+  stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
   stage.addEventListener('pointerup', (e) => {
-    const dx = x0 == null ? 0 : e.clientX - x0; x0 = null; resume();
+    const dx = x0 == null ? 0 : e.clientX - x0; x0 = null;
     if (Math.abs(dx) > 50) { skip = true; show(cur + (dx < 0 ? 1 : -1)); }
-    else if (performance.now() - t0 > 350) skip = true;
     setTimeout(() => { skip = false; }, 400);
   });
-  stage.addEventListener('pointercancel', () => { x0 = null; resume(); });
-  document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()));
-  setTimeout(() => { hint.style.opacity = '0'; }, 5000);
+  stage.addEventListener('pointercancel', () => { x0 = null; });
 
-  setLang(lang); show(0); raf = requestAnimationFrame(tick);
+  setLang(lang); show(0);
 })();
 </script>
 </body>
