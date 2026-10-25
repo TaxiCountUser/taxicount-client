@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TaxiCount · Tutorials</title>
+<meta name="description" content="Com començar amb TaxiCount: crear el compte, afegir un cotxe i afegir conductors.">
+<meta property="og:title" content="TaxiCount · Tutorials">
+<meta property="og:description" content="Crear el compte, afegir un cotxe i afegir conductors, pas a pas.">
+<meta property="og:image" content="https://www.taxicount.com/tutorials/og.jpg">
+<meta name="theme-color" content="#FFC107">
+<link rel="icon" href="../assets/brand/isotip.png">
+<!-- Tutorials pas a pas (captures reals de l'app amb dades d'exemple; generador a
+     registro/presentacion/generador). Només avancen en tocar. -->
+<style>
+  :root { --amber: #FFC107; --amber-dk: #7A5A0B; --ink: #1F1B16; --muted: #5F5A52; --side: #F3EFE8; --card: #FFF8F2; }
+  * { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--side); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+  body { display: flex; justify-content: center; }
+  .app { position: relative; width: min(100vw, 520px); min-height: 100dvh; background: #fff; display: flex; flex-direction: column; }
+  @media (min-width: 700px) { .app { margin: 16px 0; min-height: calc(100dvh - 32px); border-radius: 22px; box-shadow: 0 20px 60px rgba(31,27,22,.15); overflow: hidden; } }
+  .bar { display: flex; align-items: center; gap: 8px; padding: max(12px, env(safe-area-inset-top)) 14px 8px; }
+  .bar img { height: 30px; }
+  .grow { flex: 1; }
+  .lang { border: 1.5px solid var(--ink); background: #fff; color: var(--ink); font: 700 13px Arial; border-radius: 16px; padding: 5px 10px; cursor: pointer; }
+  .lang[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .x { border: 0; background: transparent; font-size: 26px; line-height: 1; padding: 4px 8px; cursor: pointer; color: var(--ink); }
+  /* Menú */
+  .menu { padding: 8px 18px 28px; }
+  .menu h1 { font-size: 30px; margin: 10px 0 6px; }
+  .menu p.lead { color: var(--muted); font-size: 16px; line-height: 1.4; margin-bottom: 18px; }
+  .tcard { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; border: 0; border-radius: 18px; padding: 18px; margin-bottom: 12px; cursor: pointer; background: var(--card); box-shadow: 0 2px 10px rgba(31,27,22,.06); }
+  .tcard .n { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--amber); font: 700 20px Arial; display: flex; align-items: center; justify-content: center; }
+  .tcard b { display: block; font-size: 19px; margin-bottom: 4px; color: var(--ink); }
+  .tcard span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+  /* Visor de passos */
+  .viewer { display: none; flex: 1; flex-direction: column; }
+  .prog { display: flex; gap: 4px; padding: 0 14px 6px; }
+  .prog i { flex: 1; height: 4px; border-radius: 2px; background: rgba(31,27,22,.15); }
+  .prog i.on { background: var(--ink); }
+  .head { padding: 6px 18px 4px; }
+  .step-n { font: 700 13px Arial; color: var(--amber-dk); text-transform: uppercase; letter-spacing: .5px; }
+  .head h2 { font-size: 24px; line-height: 1.15; margin: 4px 0 6px; }
+  .head p { font-size: 16px; line-height: 1.4; color: var(--muted); }
+  .stage { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 18px; min-height: 0; }
+  .phone { position: relative; height: min(56dvh, 600px); aspect-ratio: 393 / 852; background: #16130f; border-radius: 32px; padding: 7px; box-shadow: 0 16px 40px rgba(31,27,22,.25); }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 26px; overflow: hidden; background: var(--card); }
+  .screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .ring { position: absolute; border: 3px solid var(--amber); border-radius: 14px; box-shadow: 0 0 0 4px rgba(255,193,7,.35); animation: pulse 1.6s ease-in-out infinite; pointer-events: none; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 10px rgba(255,193,7,.15); } }
+  @media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
+  .info { flex: 1; padding: 6px 18px 10px; overflow: auto; }
+  .opt { border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; color: #fff; }
+  .opt b { display: block; font-size: 17px; margin-bottom: 4px; }
+  .opt span { font-size: 14.5px; line-height: 1.4; opacity: .95; }
+  .note { font-size: 14.5px; line-height: 1.4; color: var(--muted); background: var(--card); border-radius: 12px; padding: 12px 14px; }
+  .nav { display: flex; gap: 10px; padding: 10px 18px max(16px, env(safe-area-inset-bottom)); }
+  .nav button { flex: 1; height: 52px; border-radius: 26px; font: 700 17px Arial; cursor: pointer; }
+  .prev { background: #fff; border: 2px solid #DDD6CB; color: var(--ink); }
+  .next { background: var(--ink); border: 0; color: #fff; }
+  .nav button:disabled { opacity: .35; cursor: default; }
+  button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar">
+    <button class="x" id="close" aria-label="Menú" hidden>&#8592;</button>
+    <img src="marca.png" alt="TaxiCount" id="logo">
+    <div class="grow"></div>
+    <button class="lang" data-l="ca">CA</button>
+    <button class="lang" data-l="es">ES</button>
+  </div>
+  <section class="menu" id="menu"></section>
+  <section class="viewer" id="viewer">
+    <div class="prog" id="prog"></div>
+    <div class="head"><div class="step-n" id="stepn"></div><h2 id="title"></h2><p id="text"></p></div>
+    <div class="stage" id="stage"><div class="phone"><div class="screen"><img id="shot" alt=""><div class="ring" id="ring"></div></div></div></div>
+    <div class="info" id="info" hidden></div>
+    <div class="nav"><button class="prev" id="prev"></button><button class="next" id="next"></button></div>
+  </section>
+</div>
+<script>
+(() => {
+  // Ressaltats en coordenades de la pantalla del mòbil (393 × 852).
+  const R = (x, y, w, h) => ({ x, y, w, h });
+  const T = {
+    ca: {
+      ui: { title: 'Tutorials', lead: 'Aprèn a començar amb TaxiCount en pocs minuts. Toca un tutorial i ves passant amb «Següent».', prev: 'Enrere', next: 'Següent', done: 'Fet', step: 'Pas {n} de {t}', menu: 'Tutorials' },
+      tuts: [
+        { name: 'Crear el compte', sub: 'Empresa, autònom o conductor: quina triar i com registrar-te.', steps: [
+          { info: true, title: 'Abans de començar: quin compte et toca?', opts: [
+            ['#FF9800', 'Crear la meva empresa', "Ets titular d'una flota i no condueixes. El teu compte és d'empresa: veus els comptes, els cotxes i els conductors. Si algun dia condueixes, et caldrà un compte de conductor apart."],
+            ['#00897B', 'Soc la meva pròpia empresa (autònom)', 'Condueixes i portes el negoci tu mateix. Tot en un sol compte: canvies entre la vista Xofer (les teves curses) i la vista Empresa.'],
+            ['#607D8B', 'Unir-me a una flota', "Ets conductor d'una flota. T'hi uneixes amb el codi que et dona el teu cap (o entres directament si t'ha convidat pel correu)."]],
+            note: 'Com a empresa i com a autònom pots afegir conductors. Com a conductor només t\'uneixes a una flota.' },
+          { img: 'login', title: 'Obre l\'app', text: 'Prem «Crea el teu compte». Si tens Gmail, també pots prémer «Entra amb Google» i saltar-te el pas següent.', ring: R(196, 574, 250, 34) },
+          { img: 'signup_filled', title: 'Correu i contrasenya', text: 'Posa el teu correu i una contrasenya de 8 caràcters o més, i prem «Registra\'t».', ring: R(196, 570, 312, 44) },
+          { img: 'terms', title: 'Accepta els termes', text: 'Llegeix-los, marca la casella i prem «Accepta i continua».', ring: R(196, 790, 376, 96) },
+          { img: 'choose', title: 'Tria com la faràs servir', text: 'Aquí és on decideixes: empresa, autònom o conductor. Mira els passos següents per a cada cas.', ring: R(196, 545, 340, 432) },
+          { img: 'form_empresa_filled', title: 'Si ets empresa', text: 'Prem «Crear la meva empresa», escriu el nom de la flota i prem «Crea».', ring: R(274, 524, 80, 44) },
+          { img: 'empresa_after', title: 'Primers passos de l\'empresa', text: 'L\'app et proposa afegir el primer cotxe i convidar el primer conductor. Ho pots fer ara o més tard.', ring: R(196, 175, 230, 92) },
+          { img: 'form_autonom_filled', title: 'Si ets autònom', text: 'Prem «Soc la meva pròpia empresa», escriu el nom del teu negoci i prem «Comença».', ring: R(275, 570, 112, 44) },
+          { img: 'autonom_xofer', title: 'Tot en un compte', text: 'A dalt canvies de vista: «Xofer» per apuntar les teves curses i portar la jornada…', ring: R(76, 28, 150, 40) },
+          { img: 'autonom_empresa', title: '…i «Empresa»', text: '…per veure els comptes, els cotxes i els conductors, igual que una empresa. Pots afegir conductors quan vulguis.', ring: R(196, 810, 393, 76) },
+          { img: 'form_unir_filled', title: 'Si ets conductor', text: 'Prem «Unir-me a una flota», escriu el codi que t\'ha donat el teu cap i prem «Uneix-me».', ring: R(275, 512, 112, 44) },
+          { img: 'unir_after', title: 'Ja ets a la flota', text: 'Ja pots apuntar curses, portar la jornada i veure l\'agenda. Si el teu cap t\'ha convidat pel correu, no cal codi: entra directament.', ring: R(196, 306, 340, 110) } ] },
+        { name: 'Afegir un cotxe', sub: 'Dona d\'alta un cotxe, posa-li la ITV i l\'assegurança i assigna-li conductors.', steps: [
+          { img: 'v_list', title: 'Ves a Vehicles', text: 'A la pestanya «Vehicles» prem «Afegeix».', ring: R(318, 727, 120, 56) },
+          { img: 'v_add_filled', title: 'Les dades del cotxe', text: 'Matrícula, model i els km actuals (obligatori). El número de llicència només el veus tu. Prem «Desa».', ring: R(272, 610, 84, 44) },
+          { img: 'v_list2', title: 'Ja és a la llista', text: 'Toca el cotxe per obrir la seva fitxa.', ring: R(196, 141, 386, 72) },
+          { img: 'v_detail_new', title: 'La fitxa del cotxe', text: 'Aquí hi ha el manteniment: ITV, taxímetre, assegurança, targeta de transport i revisions. Prem «Edita el manteniment».', ring: R(281, 184, 180, 36) },
+          { img: 'v_picker_sel', title: 'La data de la ITV', text: 'Prem «Tria data», marca quan toca la propera ITV i prem «D\'acord».', ring: R(327, 684, 80, 40) },
+          { img: 'v_period', title: 'Cada quant es renova', text: 'Tria cada quant es fa (per exemple, cada 12 mesos): així l\'app calcula la següent.', ring: R(196, 271, 290, 44) },
+          { img: 'v_maint_filled', title: 'També l\'assegurança', text: 'Fes el mateix amb l\'assegurança (i amb el taxímetre si vols) i prem «Desa».', ring: R(288, 780, 84, 44) },
+          { img: 'v_detail_done', title: 'L\'app t\'avisa', text: 'Ara veus quants dies falten. Quan s\'acosti la data, t\'arriba una notificació.', ring: R(196, 336, 360, 252) },
+          { img: 'v_assign_sel', title: 'Assigna conductors', text: 'Prem «Assigna conductors», marca qui condueix aquest cotxe i prem «Desa».', ring: R(284, 470, 44, 44) },
+          { img: 'v_assigned', title: 'Fet!', text: 'Cotxe a punt: el conductor el tindrà per triar quan apunti curses o comenci la jornada.', ring: R(196, 828, 393, 48) } ] },
+        { name: 'Afegir un conductor', sub: 'Amb el codi de la flota o convidant-lo pel correu.', steps: [
+          { img: 'd_list', title: 'El codi de la teva flota', text: 'A «Conductors» tens el codi. Dona\'l al conductor: l\'escriu a «Unir-me a una flota» en registrar-se i entra directament a la teva flota.', ring: R(196, 132, 372, 124) },
+          { img: 'd_code', title: 'Personalitza\'l', text: 'Amb el llapis el canvies per un de més fàcil (de 4 a 12 lletres o números), per exemple el nom de l\'empresa.', ring: R(196, 385, 270, 48) },
+          { img: 'd_list', title: 'O convida\'l pel correu', text: 'També el pots convidar tu: prem «Convida».', ring: R(318, 727, 120, 56) },
+          { img: 'd_invite', title: 'Correu i nom', text: 'Escriu el seu correu i el nom i prem «Convida». El compte es crea al moment i ja queda a la teva flota.', ring: R(279, 562, 104, 44) },
+          { img: 'email', title: 'Li arriba un correu', text: 'Pot baixar l\'app, entrar amb Google si és un Gmail (sense contrasenya) o crear-se la contrasenya.', ring: R(196, 415, 330, 66) },
+          { img: 'unir_after', title: 'Ja treballa amb tu', text: 'En entrar, ja és a la teva flota: les seves curses et surten al tauler al moment.', ring: R(196, 306, 340, 110) } ] } ] },
+    es: {
+      ui: { title: 'Tutoriales', lead: 'Aprende a empezar con TaxiCount en pocos minutos. Toca un tutorial y ve pasando con «Siguiente».', prev: 'Atrás', next: 'Siguiente', done: 'Hecho', step: 'Paso {n} de {t}', menu: 'Tutoriales' },
+      tuts: [
+        { name: 'Crear la cuenta', sub: 'Empresa, autónomo o conductor: cuál elegir y cómo registrarte.', steps: [
+          { info: true, title: 'Antes de empezar: ¿qué cuenta te toca?', opts: [
+            ['#FF9800', 'Crear mi empresa', 'Eres titular de una flota y no conduces. Tu cuenta es de empresa: ves las cuentas, los coches y los conductores. Si algún día conduces, necesitarás una cuenta de conductor aparte.'],
+            ['#00897B', 'Soy mi propia empresa (autónomo)', 'Conduces y llevas el negocio tú mismo. Todo en una sola cuenta: cambias entre la vista Chófer (tus carreras) y la vista Empresa.'],
+            ['#607D8B', 'Unirme a una flota', 'Eres conductor de una flota. Te unes con el código que te da tu jefe (o entras directamente si te ha invitado por correo).']],
+            note: 'Como empresa y como autónomo puedes añadir conductores. Como conductor solo te unes a una flota.' },
+          { img: 'login', title: 'Abre la app', text: 'Pulsa «Crea tu cuenta». Si tienes Gmail, también puedes pulsar «Entrar con Google» y saltarte el paso siguiente.', ring: R(196, 574, 250, 34) },
+          { img: 'signup_filled', title: 'Correo y contraseña', text: 'Pon tu correo y una contraseña de 8 caracteres o más, y pulsa «Registrarse».', ring: R(196, 570, 312, 44) },
+          { img: 'terms', title: 'Acepta los términos', text: 'Léelos, marca la casilla y pulsa «Aceptar y continuar».', ring: R(196, 790, 376, 96) },
+          { img: 'choose', title: 'Elige cómo la usarás', text: 'Aquí decides: empresa, autónomo o conductor. Mira los pasos siguientes para cada caso.', ring: R(196, 545, 340, 432) },
+          { img: 'form_empresa_filled', title: 'Si eres empresa', text: 'Pulsa «Crear mi empresa», escribe el nombre de la flota y pulsa «Crear».', ring: R(274, 524, 80, 44) },
+          { img: 'empresa_after', title: 'Primeros pasos de la empresa', text: 'La app te propone añadir el primer coche e invitar al primer conductor. Puedes hacerlo ahora o más tarde.', ring: R(196, 175, 230, 92) },
+          { img: 'form_autonom_filled', title: 'Si eres autónomo', text: 'Pulsa «Soy mi propia empresa», escribe el nombre de tu negocio y pulsa «Empezar».', ring: R(275, 570, 112, 44) },
+          { img: 'autonom_xofer', title: 'Todo en una cuenta', text: 'Arriba cambias de vista: «Chófer» para apuntar tus carreras y llevar la jornada…', ring: R(76, 28, 150, 40) },
+          { img: 'autonom_empresa', title: '…y «Empresa»', text: '…para ver las cuentas, los coches y los conductores, igual que una empresa. Puedes añadir conductores cuando quieras.', ring: R(196, 810, 393, 76) },
+          { img: 'form_unir_filled', title: 'Si eres conductor', text: 'Pulsa «Unirme a una flota», escribe el código que te ha dado tu jefe y pulsa «Unirme».', ring: R(275, 512, 112, 44) },
+          { img: 'unir_after', title: 'Ya estás en la flota', text: 'Ya puedes apuntar carreras, llevar la jornada y ver la agenda. Si tu jefe te ha invitado por correo, no hace falta código: entra directamente.', ring: R(196, 306, 340, 110) } ] },
+        { name: 'Añadir un coche', sub: 'Da de alta un coche, ponle la ITV y el seguro y asígnale conductores.', steps: [
+          { img: 'v_list', title: 'Ve a Vehículos', text: 'En la pestaña «Vehículos» pulsa «Añadir».', ring: R(318, 727, 120, 56) },
+          { img: 'v_add_filled', title: 'Los datos del coche', text: 'Matrícula, modelo y los km actuales (obligatorio). El número de licencia solo lo ves tú. Pulsa «Guardar».', ring: R(272, 610, 84, 44) },
+          { img: 'v_list2', title: 'Ya está en la lista', text: 'Toca el coche para abrir su ficha.', ring: R(196, 141, 386, 72) },
+          { img: 'v_detail_new', title: 'La ficha del coche', text: 'Aquí está el mantenimiento: ITV, taxímetro, seguro, tarjeta de transporte y revisiones. Pulsa «Editar mantenimiento».', ring: R(281, 184, 180, 36) },
+          { img: 'v_picker_sel', title: 'La fecha de la ITV', text: 'Pulsa «Elegir fecha», marca cuándo toca la próxima ITV y pulsa «Aceptar».', ring: R(327, 684, 80, 40) },
+          { img: 'v_period', title: 'Cada cuánto se renueva', text: 'Elige cada cuánto se hace (por ejemplo, cada 12 meses): así la app calcula la siguiente.', ring: R(196, 271, 290, 44) },
+          { img: 'v_maint_filled', title: 'También el seguro', text: 'Haz lo mismo con el seguro (y con el taxímetro si quieres) y pulsa «Guardar».', ring: R(288, 780, 84, 44) },
+          { img: 'v_detail_done', title: 'La app te avisa', text: 'Ahora ves cuántos días faltan. Cuando se acerque la fecha, te llega una notificación.', ring: R(196, 336, 360, 252) },
+          { img: 'v_assign_sel', title: 'Asigna conductores', text: 'Pulsa «Asignar conductores», marca quién conduce este coche y pulsa «Guardar».', ring: R(284, 470, 44, 44) },
+          { img: 'v_assigned', title: '¡Hecho!', text: 'Coche listo: el conductor lo tendrá para elegir cuando apunte carreras o empiece la jornada.', ring: R(196, 828, 393, 48) } ] },
+        { name: 'Añadir un conductor', sub: 'Con el código de la flota o invitándolo por correo.', steps: [
+          { img: 'd_list', title: 'El código de tu flota', text: 'En «Conductores» tienes el código. Dáselo al conductor: lo escribe en «Unirme a una flota» al registrarse y entra directamente en tu flota.', ring: R(196, 132, 372, 124) },
+          { img: 'd_code', title: 'Personalízalo', text: 'Con el lápiz lo cambias por uno más fácil (de 4 a 12 letras o números), por ejemplo el nombre de la empresa.', ring: R(196, 385, 270, 48) },
+          { img: 'd_list', title: 'O invítalo por correo', text: 'También puedes invitarlo tú: pulsa «Invitar».', ring: R(318, 727, 120, 56) },
+          { img: 'd_invite', title: 'Correo y nombre', text: 'Escribe su correo y el nombre y pulsa «Invitar». La cuenta se crea al momento y ya queda en tu flota.', ring: R(279, 562, 104, 44) },
+          { img: 'email', title: 'Le llega un correo', text: 'Puede descargar la app, entrar con Google si es un Gmail (sin contraseña) o crearse la contraseña.', ring: R(196, 415, 330, 66) },
+          { img: 'unir_after', title: 'Ya trabaja contigo', text: 'Al entrar, ya está en tu flota: sus carreras te salen en el panel al momento.', ring: R(196, 306, 340, 110) } ] } ] },
+  };
+
+  let lang = 'ca';
+  try {
+    const q = new URLSearchParams(location.search).get('lang');
+    lang = q === 'es' || q === 'ca' ? q : (localStorage.getItem('tc_lang') || ((navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'ca'));
+  } catch (e) { /* sense emmagatzematge */ }
+  if (lang !== 'es') lang = 'ca';
+  const $ = (id) => document.getElementById(id);
+  let tut = -1, step = 0;
+
+  function renderMenu() {
+    const d = T[lang];
+    $('menu').innerHTML = `<h1>${d.ui.title}</h1><p class="lead">${d.ui.lead}</p>` +
+      d.tuts.map((t, i) => `<button class="tcard" data-t="${i}"><span class="n">${i + 1}</span><span><b>${t.name}</b><span>${t.sub}</span></span></button>`).join('');
+    $('menu').querySelectorAll('.tcard').forEach((b) => b.addEventListener('click', () => open(+b.dataset.t)));
+  }
+  function open(i) { tut = i; step = 0; $('menu').style.display = 'none'; $('viewer').style.display = 'flex'; $('close').hidden = false; $('logo').style.display = 'none'; render(); window.scrollTo(0, 0); }
+  function close() { tut = -1; $('menu').style.display = 'block'; $('viewer').style.display = 'none'; $('close').hidden = true; $('logo').style.display = ''; renderMenu(); }
+  function render() {
+    const d = T[lang], t = d.tuts[tut], s = t.steps[step], n = t.steps.length;
+    $('prog').innerHTML = t.steps.map((_, k) => `<i class="${k <= step ? 'on' : ''}"></i>`).join('');
+    $('stepn').textContent = `${t.name} · ${d.ui.step.replace('{n}', step + 1).replace('{t}', n)}`;
+    $('title').textContent = s.title;
+    $('text').textContent = s.text || '';
+    if (s.info) {
+      $('stage').style.display = 'none'; $('info').hidden = false;
+      $('info').innerHTML = s.opts.map(([c, h, p]) => `<div class="opt" style="background:${c}"><b>${h}</b><span>${p}</span></div>`).join('') + `<div class="note">${s.note}</div>`;
+    } else {
+      $('info').hidden = true; $('stage').style.display = 'flex';
+      $('shot').src = `img/${lang}/${s.img}.webp`; $('shot').alt = s.title;
+      const r = s.ring, ring = $('ring');
+      if (r) {
+        ring.style.display = 'block';
+        ring.style.left = ((r.x - r.w / 2) / 393 * 100) + '%'; ring.style.top = ((r.y - r.h / 2) / 852 * 100) + '%';
+        ring.style.width = (r.w / 393 * 100) + '%'; ring.style.height = (r.h / 852 * 100) + '%';
+      } else ring.style.display = 'none';
+    }
+    $('prev').textContent = d.ui.prev; $('prev').disabled = step === 0;
+    $('next').textContent = step === n - 1 ? d.ui.done : d.ui.next;
+    // Precàrrega del pas següent
+    const nx = t.steps[step + 1]; if (nx && nx.img) { const im = new Image(); im.src = `img/${lang}/${nx.img}.webp`; }
+  }
+  function go(dlt) {
+    const n = T[lang].tuts[tut].steps.length;
+    if (step + dlt >= n) return close();
+    step = Math.max(0, step + dlt); render();
+  }
+  function setLang(l) {
+    lang = l; try { localStorage.setItem('tc_lang', l); } catch (e) {}
+    document.documentElement.lang = l;
+    document.querySelectorAll('.lang').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.l === l)));
+    $('close').setAttribute('aria-label', T[l].ui.menu);
+    if (tut < 0) renderMenu(); else render();
+  }
+  $('next').addEventListener('click', () => go(1));
+  $('prev').addEventListener('click', () => go(-1));
+  $('close').addEventListener('click', close);
+  document.querySelectorAll('.lang').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.l)));
+  document.addEventListener('keydown', (e) => {
+    if (tut < 0) return;
+    if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); if (e.key === 'Escape') close();
+  });
+  // Lliscar per canviar de pas
+  let x0 = null;
+  $('viewer').addEventListener('pointerdown', (e) => { x0 = e.clientX; });
+  $('viewer').addEventListener('pointerup', (e) => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1); });
+  // ?t=1..3 obre directament un tutorial (per enllaçar-lo des de l'app o un missatge)
+  setLang(lang);
+  try { const t = +new URLSearchParams(location.search).get('t'); if (t >= 1 && t <= 3) open(t - 1); } catch (e) {}
+})();
+</script>
+</body>
+</html>
