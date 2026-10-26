@@ -858,7 +858,8 @@
    "related": [
     "end_shift",
     "km_jump"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=jornada"
   },
   "end_shift": {
    "cat": "jornada",
@@ -896,7 +897,8 @@
    "related": [
     "start_shift",
     "km_jump"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=jornada"
   },
   "add_voice": {
    "cat": "registro",
@@ -931,7 +933,8 @@
     "voice_tips",
     "mic_permission",
     "add_manual"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "voice_tips": {
    "cat": "registro",
@@ -965,7 +968,8 @@
    "related": [
     "add_voice",
     "voice_error"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "mic_permission": {
    "cat": "errores",
@@ -1069,7 +1073,8 @@
     "add_expense",
     "payment_methods",
     "client_field"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "add_expense": {
    "cat": "registro",
@@ -1102,7 +1107,8 @@
    "related": [
     "driver_sees",
     "add_manual"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "edit_record": {
    "cat": "registro",
@@ -1139,7 +1145,8 @@
    },
    "related": [
     "view_transactions"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "view_transactions": {
    "cat": "registro",
@@ -1176,7 +1183,8 @@
    "related": [
     "edit_record",
     "export"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "km_jump": {
    "cat": "errores",
@@ -1268,7 +1276,8 @@
    },
    "related": [
     "add_manual"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "client_field": {
    "cat": "registro",
@@ -1297,7 +1306,8 @@
    },
    "related": [
     "export"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=curses"
   },
   "driver_sees": {
    "cat": "cuenta",
@@ -1360,7 +1370,8 @@
    "related": [
     "forgot_password",
     "google_login"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "forgot_password": {
    "cat": "acceso",
@@ -1476,7 +1487,8 @@
    },
    "related": [
     "login"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "confirm_email": {
    "cat": "acceso",
@@ -1500,7 +1512,8 @@
     "es": "Al registrarte te enviamos un correo para confirmar la cuenta. Ábrelo y pulsa el enlace; luego vuelve a la app y entra. Si no lo ves, mira en spam o promociones y espera un par de minutos.",
     "ca": "En registrar-te t'enviem un correu per confirmar el compte. Obre'l i prem l'enllaç; després torna a l'app i entra. Si no el veus, mira al correu brossa o a promocions i espera un parell de minuts.",
     "en": "When you sign up we send an email to confirm the account. Open it and tap the link, then go back to the app and log in. If you can't find it, check spam or promotions and wait a couple of minutes."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "account_deleted": {
    "cat": "acceso",
@@ -1553,7 +1566,8 @@
    },
    "related": [
     "join_fleet"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "join_fleet": {
    "cat": "acceso",
@@ -1582,7 +1596,8 @@
     "es": "Pide a tu jefe el «Código de tu flota» (lo ve en Conductores). Al entrar en la app, elige «Unirme a una flota», escribe el código y pulsa «Unirme». También puede darte de alta él directamente con usuario y contraseña.",
     "ca": "Demana al teu cap el «Codi de la teva flota» (el veu a Conductors). En entrar a l'app, tria «Unir-me a una flota», escriu el codi i prem «Unir-me». També et pot donar d'alta ell directament amb usuari i contrasenya.",
     "en": "Ask your boss for the “Fleet code” (they see it in Drivers). When you open the app, choose “Join a fleet”, type the code and tap “Join”. They can also register you directly with a username and password."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "invite_driver": {
    "cat": "flota",
@@ -1617,7 +1632,8 @@
    "related": [
     "seats",
     "edit_driver"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=conductor"
   },
   "edit_driver": {
    "cat": "flota",
@@ -1717,7 +1733,8 @@
    "related": [
     "assign_vehicle",
     "maintenance"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=cotxe"
   },
   "assign_vehicle": {
    "cat": "flota",
@@ -1747,7 +1764,8 @@
     "es": "Jefe: en «Vehículos» → el coche → «Asignar conductores» (o desde la ficha del conductor → «Asignar vehículos»).\n\nConductor: si tienes más de un coche asignado, cámbialo en Ajustes → «Cambiar vehículo activo». Si sale «No tienes vehículos asignados», pídele a tu jefe que te asigne uno.",
     "ca": "Cap: a «Vehicles» → el cotxe → «Assignar conductors» (o des de la fitxa del conductor → «Assignar vehicles»).\n\nConductor: si tens més d'un cotxe assignat, canvia'l a Ajustos → «Canviar vehicle actiu». Si surt «No tens vehicles assignats», demana al teu cap que te n'assigni un.",
     "en": "Boss: “Vehicles” → the car → “Assign drivers” (or from the driver's page → “Assign vehicles”).\n\nDriver: if you have more than one car assigned, switch in Settings → “Change active vehicle”. If you see “No vehicles assigned”, ask your boss to assign one."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=cotxe"
   },
   "maintenance": {
    "cat": "flota",
@@ -1784,7 +1802,8 @@
     "es": "En «Vehículos» → el coche → «Editar mantenimiento». Puedes apuntar ITV, ITV del taxímetro, seguro, tarjeta de transporte y revisiones, para tenerlo todo controlado.",
     "ca": "A «Vehicles» → el cotxe → «Editar manteniment». Pots apuntar ITV, ITV del taxímetre, assegurança, targeta de transport i revisions, per tenir-ho tot controlat.",
     "en": "In “Vehicles” → the car → “Edit maintenance”. You can log MOT, taximeter inspection, insurance, transport card and services, to keep it all under control."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=cotxe"
   },
   "locate_vehicle": {
    "cat": "flota",
@@ -1849,7 +1868,8 @@
     "compare",
     "export",
     "hide_amounts"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=informes"
   },
   "hide_amounts": {
    "cat": "panel",
@@ -1876,7 +1896,8 @@
     "es": "En el «Panel de control», el icono del ojo de arriba oculta o muestra los importes. Útil si enseñas la pantalla a alguien.",
     "ca": "Al «Panell de control», la icona de l'ull de dalt amaga o mostra els imports. Útil si ensenyes la pantalla a algú.",
     "en": "On the “Dashboard”, the eye icon at the top hides or shows amounts. Handy when showing the screen to someone."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=informes"
   },
   "compare": {
    "cat": "panel",
@@ -1903,7 +1924,8 @@
     "es": "En el «Panel de control» pulsa «Comparar». Puedes comparar por Día, Semana, Mes, Año o un rango personalizado, en dinero o en km.",
     "ca": "Al «Panell de control» prem «Comparar». Pots comparar per Dia, Setmana, Mes, Any o un rang personalitzat, en diners o en km.",
     "en": "On the “Dashboard” tap “Compare”. Compare by Day, Week, Month, Year or a custom range, in money or km."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=informes"
   },
   "export": {
    "cat": "panel",
@@ -1937,7 +1959,8 @@
    },
    "related": [
     "import"
-   ]
+   ],
+   "tutorial": "https://www.taxicount.com/tutorials/?t=informes"
   },
   "import": {
    "cat": "panel",
@@ -2325,7 +2348,8 @@
     "es": "Conductor: Ajustes → «Mensajes al jefe» abre un chat directo con tu jefe.\nJefe: la pestaña «Mensajes» tiene un chat con cada conductor.\n\nEste chat es solo entre vosotros; para problemas de la app, usa el soporte (o pídeme crear un ticket).",
     "ca": "Conductor: Ajustos → «Missatges al cap» obre un xat directe amb el teu cap.\nCap: la pestanya «Missatges» té un xat amb cada conductor.\n\nAquest xat és només entre vosaltres; per a problemes de l'app, fes servir el suport (o demana'm crear un tiquet).",
     "en": "Driver: Settings → “Messages to boss” opens a direct chat with your boss.\nBoss: the “Messages” tab has a chat with each driver.\n\nThis chat is just between you; for app problems use support (or ask me to create a ticket)."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=agenda"
   },
   "notifications": {
    "cat": "extras",
@@ -2448,7 +2472,8 @@
     "es": "Si eres jefe y también conduces, activa Ajustes → «Soy también chófer» y reinicia la app. Arriba tendrás un conmutador «Empresa» / «Chófer» para pasar de gestionar la flota a apuntar tus carreras. Si empiezas de cero solo, elige «Soy mi propia empresa» al registrarte.",
     "ca": "Si ets cap i també condueixes, activa Ajustos → «També soc xofer» i reinicia l'app. A dalt tindràs un commutador «Empresa» / «Xofer» per passar de gestionar la flota a apuntar les teves carreres. Si comences de zero sol, tria «Soc la meva pròpia empresa» en registrar-te.",
     "en": "If you're the boss and also drive, turn on Settings → “I'm also a driver” and restart the app. You'll get a “Company” / “Driver” switch at the top. If you're starting alone, choose “I'm my own company” when signing up."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=compte"
   },
   "agenda": {
    "cat": "extras",
@@ -2477,7 +2502,8 @@
     "es": "La Agenda sirve para apuntar servicios programados (cliente, recogida, destino, teléfono, precio, fecha y hora), compartidos con toda la flota. Es una función que se activa por empresa: si no la ves, aún no está activa en la tuya. Si te interesa, crea un ticket y te contamos.",
     "ca": "L'Agenda serveix per apuntar serveis programats (client, recollida, destinació, telèfon, preu, data i hora), compartits amb tota la flota. És una funció que s'activa per empresa: si no la veus, encara no està activa a la teva. Si t'interessa, crea un tiquet i t'ho expliquem.",
     "en": "The Agenda lets you log scheduled rides (client, pickup, destination, phone, price, date and time), shared with the whole fleet. It's enabled per company: if you can't see it, it isn't active for yours yet. If you're interested, create a ticket and we'll tell you more."
-   }
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/?t=agenda"
   },
   "privacy": {
    "cat": "cuenta",
@@ -2647,10 +2673,11 @@
     ]
    },
    "a": {
-    "es": "Estamos preparando videotutoriales de cada parte de la app; cuando estén, te los recomendaré aquí mismo. Mientras tanto, pregúntame lo que necesites: cómo registrar carreras, cerrar la jornada, invitar conductores, exportar informes…",
-    "ca": "Estem preparant vídeos tutorials de cada part de l'app; quan estiguin, te'ls recomanaré aquí mateix. Mentrestant, pregunta'm el que necessitis: com registrar carreres, tancar la jornada, convidar conductors, exportar informes…",
-    "en": "We're preparing video tutorials for each part of the app; when they're ready I'll recommend them right here. Meanwhile, ask me anything: logging rides, ending a shift, inviting drivers, exporting reports…"
-   }
+    "es": "¡Sí! Tienes tutoriales paso a paso, para el móvil y para el ordenador: crear la cuenta, apuntar carreras y gastos, la jornada, la agenda, añadir coches y conductores, y el panel con los informes. Pulsa «Ver tutorial».",
+    "ca": "Sí! Tens tutorials pas a pas, per al mòbil i per a l'ordinador: crear el compte, apuntar curses i despeses, la jornada, l'agenda, afegir cotxes i conductors, i el tauler amb els informes. Prem «Veure tutorial».",
+    "en": "Yes! There are step-by-step tutorials for phone and computer: creating your account, logging rides and expenses, the working day, the agenda, adding cars and drivers, and the dashboard with reports. Tap “Watch tutorial”."
+   },
+   "tutorial": "https://www.taxicount.com/tutorials/"
   },
   "support": {
    "cat": "extras",
